@@ -15,12 +15,16 @@
 #define FACE_H
 
 #include "Point.h"
+#include <iostream>
+#include "FvCell.h"
 
+class FvCell;
 class Face{
     
 private:
     Point* centroid;
     double length, width;
+    FvCell *cell1, *cell2;
     
 public:
     Face(Point* centroid, double length, double width);
@@ -28,6 +32,10 @@ public:
     Point* getCentroid();
     double getLength();
     double getWidth();
+    FvCell* getCell1();
+    FvCell* getCell2();
+    void setCell1(FvCell* cell1);
+    void setCell2(FvCell* cell2);
     
     
 };

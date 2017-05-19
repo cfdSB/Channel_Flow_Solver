@@ -7,7 +7,7 @@
 #include "Face.h"
 
 Face::Face(Point* centroid, double length, double width):
-centroid(centroid), length(length), width(width){
+centroid(centroid), length(length), width(width), cell1(NULL), cell2(NULL){
     
 }
 
@@ -25,6 +25,22 @@ double Face::getLength() {
 
 double Face::getWidth() {
     return width;
+}
+
+FvCell* Face::getCell1() {
+    return cell1;
+}
+
+FvCell* Face::getCell2() {
+    return cell2;
+}
+
+void Face::setCell1(FvCell* cell1) {
+    this->cell1 = cell1;
+}
+
+void Face::setCell2(FvCell* cell2) {
+    this->cell2 = cell2;
 }
 
 

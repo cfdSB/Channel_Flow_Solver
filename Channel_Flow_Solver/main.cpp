@@ -12,14 +12,36 @@
  */
 
 #include <cstdlib>
+#include <vector>
+#include <iostream>
+
+#include "Point.h"
+#include "FvCell.h"
+#include "Face.h"
+#include "MeshBuilder.h"
 
 using namespace std;
+void printCell(FvCell* cell);
 
 /*
  * 
  */
 int main(int argc, char** argv) {
+       
+    int xCells = 5;
+    int yCells = 5;
+    int zCells = 5;
+    
+    double xMin = 0.0, xMax = 1.0, yMin = 0.0, yMax = 1.0, zMin = 0.0, zMax = 1.0;
+    
+    MeshBuilder mesher;
+    mesher.buildMesh(xMin, xMax, yMin, yMax, zMin, zMax, xCells, yCells, zCells);
+    mesher.printCells();
 
     return 0;
 }
+
+
+
+
 

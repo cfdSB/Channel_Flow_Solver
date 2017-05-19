@@ -17,6 +17,8 @@
 #include "Point.h"
 #include "Face.h"
 #include <vector>
+
+class Face;
 class FvCell{
 private:
     Point* centroid;    //cell centroid
