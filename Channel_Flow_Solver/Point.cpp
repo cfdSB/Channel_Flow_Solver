@@ -19,4 +19,10 @@ double* Point::getCoordinates() {
     return coordinates;
 }
 
-
+std::string Point::toString(){
+    
+    std::ostringstream output;
+    double xp = coordinates[0]; double yp = coordinates[1]; double zp= coordinates[2];
+    output<<"Point: "<<xp<<","<<yp<<","<<zp;
+    return output.str();
+}

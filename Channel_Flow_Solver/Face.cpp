@@ -13,6 +13,8 @@ centroid(centroid), length(length), width(width), cell1(NULL), cell2(NULL){
 
 Face::~Face(){
     centroid = 0;
+    cell1 = 0;
+    cell2 = 0;
 }
 
 Point* Face::getCentroid() {
@@ -42,6 +44,15 @@ void Face::setCell1(FvCell* cell1) {
 void Face::setCell2(FvCell* cell2) {
     this->cell2 = cell2;
 }
+
+std::string Face::toString() {
+    std::ostringstream output;
+    std::string pointString = centroid->toString();
+    output <<"Face Centroid: " << pointString << "\n";
+    output<<"Face Size:" << length << "," << width;
+    return output.str();
+}
+
 
 
 

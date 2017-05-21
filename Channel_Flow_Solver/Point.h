@@ -13,8 +13,11 @@
 
 #ifndef POINT_H
 #define POINT_H
+#include "Object.h"
+#include <iostream>
+#include <sstream>
 
-class Point{
+class Point: public Object{
 private:
     double coordinates[3];    //array holding coordinate values
     
@@ -22,6 +25,8 @@ public:
     Point(double xCoord, double yCoord, double zCoord);
     double* getCoordinates();
     ~Point();
+    std::string toString() override;
+
     
 };
 

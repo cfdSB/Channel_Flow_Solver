@@ -14,17 +14,20 @@
 #ifndef FACE_H
 #define FACE_H
 
+#include "Object.h"
 #include "Point.h"
 #include <iostream>
+#include <sstream>
 #include "FvCell.h"
 
-class FvCell;
-class Face{
+class FvCell;   //forward declaration to avoid circular dependency situation in header files
+
+class Face : public Object{
     
 private:
-    Point* centroid;
-    double length, width;
-    FvCell *cell1, *cell2;
+    Point* centroid;    //face centroid
+    double length, width;   //face dimensions
+    FvCell *cell1, *cell2;  //cells connected to faces
     
 public:
     Face(Point* centroid, double length, double width);
@@ -36,7 +39,8 @@ public:
     FvCell* getCell2();
     void setCell1(FvCell* cell1);
     void setCell2(FvCell* cell2);
-    
+    std::string toString() override;
+
     
 };
 

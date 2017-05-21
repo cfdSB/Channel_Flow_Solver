@@ -26,7 +26,7 @@ double FvCell::getDz(){
 }
 
 FvCell::~FvCell() {
-
+    centroid = 0;
 }
 
 void FvCell::setFaces(std::vector<Face*>& faces) {
@@ -39,7 +39,19 @@ Face** FvCell::getFaces() {
     return faces;
 }
 
+std::string FvCell::toString() {
+    std::ostringstream output;
+    std::string pointOutput= centroid->toString();
+    output << "Cell Centroid: " << pointOutput << "\n";
+    output << "Cell Size:" << dx << "," << dy <<","<< dz << "\n";
 
+    
+    std::string faceOutput;
+    for (int j = 0; j < 6; j++) {
+        faceOutput = faces[j]->toString();
+        output << faceOutput << "\n";
+    }
+    return output.str();
 
-
+}
 

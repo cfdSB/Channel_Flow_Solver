@@ -6,34 +6,13 @@
 
 #include "MeshBuilder.h"
 
+
 MeshBuilder::MeshBuilder() {
-    allPoints = new std::vector<Point*>();
-    allFaces = new std::vector<Face*>();
-    allCells = new std::vector<FvCell*>();
+    volumeMesh.reset(new VolumeMesh());
 }
 
 MeshBuilder::~MeshBuilder() {
-    //delete all point objects
-    for(int i=0; i<allPoints->size(); i++) {
-        Point* p = (*allPoints)[i];
-        delete p;
-    }
-    delete allPoints;   //delete vector object
 
-    //delete all face objects
-    for (int i = 0; i < allFaces->size(); i++) {
-        Face* p = (*allFaces)[i];
-        delete p;
-    }
-    delete allFaces;    //delete vector object
-    
-    //delete all cell objects
-    for (int i = 0; i < allCells->size(); i++) {
-        FvCell* p = (*allCells)[i];
-        delete p;
-    }
-    delete allCells;    //delete vector object
-    
 }
 
 void MeshBuilder::buildMesh(double xMin, double xMax, double yMin, double yMax, double zMin, double zMax, int xCells, int yCells, int zCells){    
@@ -69,8 +48,10 @@ void MeshBuilder::buildMesh(double xMin, double xMax, double yMin, double yMax, 
                 }
                 
                 //create cell
-                Point* cellCenter = createPoint(currentX, currentY, currentZ);
-                FvCell* cell = createCell(cellCenter, dx, dy, dz);
+                Point* cellCenter = new Point(currentX, currentY, currentZ);
+                FvCell* cell = new FvCell(cellCenter, dx, dy, dz);
+                volumeMesh->addPoint(cellCenter);
+                volumeMesh->addCell(cell);
                 std::vector<Face*> faces = buildFaces(cell);
                 cell->setFaces(faces);
                                         
@@ -79,23 +60,6 @@ void MeshBuilder::buildMesh(double xMin, double xMax, double yMin, double yMax, 
     }    
 }
 
-Point* MeshBuilder::createPoint(double x, double y, double z) {
-    Point* p = new Point(x, y, z);
-    allPoints->push_back(p);
-    return p;
-}
-
-FvCell* MeshBuilder::createCell(Point* centroid, double length, double width, double height) {
-    FvCell* c = new FvCell(centroid, length, width, height);
-    allCells->push_back(c);
-    return c;
-}
-
-Face* MeshBuilder::createFace(Point* centroid, double length, double width) {
-    Face* f = new Face(centroid, length, width);
-    allFaces->push_back(f);
-    return f;
-}
 
 void MeshBuilder::printCell(FvCell* cell){
     std::cout<<"-----------------"<<std::endl;
@@ -196,13 +160,14 @@ void MeshBuilder::assignFaceToCell(Face* face, FvCell* cell) {
 }
 
 Face* MeshBuilder::FindFaceAndConnectToCell(std::unique_ptr<Point>& pnt, std::unique_ptr<Face>& face, FvCell* cell) {
-    Face* faceFound = findFace(face.get()); //find existing face, or return the comparing face
+    Face* faceFound = volumeMesh->findFace(face.get(),faceMatchTolerance); //find existing face, or return the comparing face
 
     //face does not exist already
-    if (faceFound == face.get()) {
+    if (faceFound == NULL) {
         std::cout<<"Face does not exist"<<std::endl;
-        allPoints->push_back(pnt.get());
-        allFaces->push_back(face.get());
+        volumeMesh->addFace(face.get());
+        volumeMesh->addPoint(pnt.get());
+        faceFound = face.get();   //return the newly created face
         assignFaceToCell(face.get(), cell);
         pnt.release(); //so that point is not destroyed when unique_ptr goes out of scope
         face.release();
@@ -215,42 +180,13 @@ Face* MeshBuilder::FindFaceAndConnectToCell(std::unique_ptr<Point>& pnt, std::un
     return faceFound;
 }
 
-
-Face* MeshBuilder::findFace(Face* faceToCompare){
-    Face* faceFound = faceToCompare;
-    
-    for(int i=0; i< allFaces->size(); i++){
-        Face* tmpFace = (*allFaces)[i];
-        
-        Point* centroid1 = tmpFace->getCentroid();
-        Point* centroid2 = faceToCompare->getCentroid();
-        
-        double distance = findDistance(*centroid1, *centroid2);
-        if(distance < faceMatchTolerance){
-            std::cout << "Distance: " << distance << " less than tolerance "<<faceMatchTolerance<<std::endl;
-            faceFound = tmpFace;
-            break;
-        }
-    }
-    
-    return faceFound;
+void MeshBuilder::printMeshReport() {
+    volumeMesh->printCells();
+    std::cout<<"Cell Count: "<< volumeMesh->getCellCount()<<std::endl;
+    std::cout<<"Face Count: "<< volumeMesh->getFaceCount()<<std::endl;
+    std::cout<<"Point Count: "<< volumeMesh->getPointCount()<< std::endl;
 }
 
-double MeshBuilder::findDistance(Point& p1, Point& p2){
-    double* d1 = p1.getCoordinates();
-    double* d2 = p2.getCoordinates();
-    
-    double distance = pow((d2[0]-d1[0]),2) + pow((d2[1]-d1[1]),2) + pow((d2[2]-d1[2]),2);
-    distance = sqrt(distance);
-    return distance;
-}
-
-void MeshBuilder::printCells() {
-      for (int i = 0; i < allCells->size(); i++) {
-          std::cout<<"Cell no: " << i <<std::endl;
-        printCell((*allCells)[i]);
-    }
-}
    
 
 

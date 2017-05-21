@@ -36,7 +36,7 @@ int main(int argc, char** argv) {
     
     MeshBuilder mesher;
     mesher.buildMesh(xMin, xMax, yMin, yMax, zMin, zMax, xCells, yCells, zCells);
-    mesher.printCells();
+    mesher.printMeshReport();
 
     return 0;
 }

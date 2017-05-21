@@ -14,12 +14,14 @@
 #ifndef FVCELL_H
 #define FVCELL_H
 
+#include "Object.h"
 #include "Point.h"
 #include "Face.h"
 #include <vector>
+#include <sstream>
 
 class Face;
-class FvCell{
+class FvCell: public Object{
 private:
     Point* centroid;    //cell centroid
     double dx, dy, dz;  //cell dimensions
@@ -35,6 +37,8 @@ public:
     
     void setFaces(std::vector<Face*>& faces);
     Face** getFaces();
+    std::string toString() override;
+
 };
 
 
