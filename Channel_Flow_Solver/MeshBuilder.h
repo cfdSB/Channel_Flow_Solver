@@ -32,14 +32,12 @@ public:
     void printCells();
     const double faceMatchTolerance = 1e-4;
     void printMeshReport();
+    VolumeMesh* getVolumeMesh();
 
 private:
 
     std::unique_ptr<VolumeMesh> volumeMesh;
-
-    Point* createPoint(double x, double y, double z);
-    Face* createFace(Point* centroid, double length, double width);
-    FvCell* createCell(Point* centroid, double length, double width, double height);
+    
     std::vector<Face*> buildFaces(FvCell* cell);
     void printCell(FvCell* cell);
     double findDistance(Point& p1, Point& p2);

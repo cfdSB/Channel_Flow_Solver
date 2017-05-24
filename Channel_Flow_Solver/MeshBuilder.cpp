@@ -187,6 +187,10 @@ void MeshBuilder::printMeshReport() {
     std::cout<<"Point Count: "<< volumeMesh->getPointCount()<< std::endl;
 }
 
+VolumeMesh* MeshBuilder::getVolumeMesh() {
+    return volumeMesh.get();
+}
+
    
 
 
