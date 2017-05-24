@@ -19,6 +19,7 @@
 #include "FvCell.h"
 #include "Face.h"
 #include "MeshBuilder.h"
+#include "MeshDescritizer.h"
 
 using namespace std;
 void printCell(FvCell* cell);
@@ -37,6 +38,10 @@ int main(int argc, char** argv) {
     MeshBuilder mesher;
     mesher.buildMesh(xMin, xMax, yMin, yMax, zMin, zMax, xCells, yCells, zCells);
     mesher.printMeshReport();
+    
+    VolumeMesh* mesh = mesher.getVolumeMesh();
+    std::unique_ptr<MeshDescritizer> discretizer(new MeshDescritizer());
+    discretizer->computeDiscretizationCoefficients(mesh);
 
     return 0;
 }
