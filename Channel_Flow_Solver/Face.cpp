@@ -53,6 +53,18 @@ std::string Face::toString() {
     return output.str();
 }
 
+FvCell* Face::getConnectingCell(FvCell* cell) {
+    if(cell1 != cell){
+        return cell1;   //return nonmatching cell
+    }else{
+        return cell2;
+    }
+}
+
+double Face::getArea() {
+    return length*width;
+}
+
 
 
 

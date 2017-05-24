@@ -40,6 +40,8 @@ public:
     void setCell1(FvCell* cell1);
     void setCell2(FvCell* cell2);
     std::string toString() override;
+    FvCell* getConnectingCell(FvCell* cell);
+    double getArea();
 
     
 };
