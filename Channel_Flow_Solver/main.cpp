@@ -42,6 +42,7 @@ int main(int argc, char** argv) {
     VolumeMesh* mesh = mesher.getVolumeMesh();
     std::unique_ptr<MeshDescritizer> discretizer(new MeshDescritizer());
     discretizer->computeDiscretizationCoefficients(mesh);
+    discretizer->printCoefficients();
 
     return 0;
 }

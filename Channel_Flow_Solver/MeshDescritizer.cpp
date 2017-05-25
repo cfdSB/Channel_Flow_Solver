@@ -75,6 +75,18 @@ void MeshDescritizer::generateDescritizationCoefficients(FvCell* cell) {
     
 }
 
+void MeshDescritizer::printCoefficients() {
+    std::vector<CellDescritization*>::iterator it = allDescritizations->begin();
+    while(it!=allDescritizations->end()){
+        std::cout<<"---------"<<std::endl;
+        std::string output = (*it)->toString();
+        std::cout<<output<<std::endl;
+        it++;
+        
+    }
+}
+
+
 
 
 

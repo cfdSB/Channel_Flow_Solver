@@ -28,6 +28,7 @@ public:
     MeshDescritizer(const MeshDescritizer& orig);
     virtual ~MeshDescritizer();
     void computeDiscretizationCoefficients(VolumeMesh* mesh);
+    void printCoefficients();
 private:
     std::vector<CellDescritization*>* allDescritizations;
     void generateDescritizationCoefficients(FvCell* cell);

@@ -14,12 +14,13 @@
 #ifndef CELLDESCRITIZATION_H
 #define CELLDESCRITIZATION_H
 
+#include "Object.h"
 #include <map>
-
+#include <sstream>
 class FvCell;    //forward declaration
 class Face;
 
-class CellDescritization {
+class CellDescritization : public Object {
 public:
     CellDescritization(FvCell* cell);
     CellDescritization(const CellDescritization& orig);
@@ -30,6 +31,8 @@ public:
     void addSuComponent(Face* face, double value);
     void addSpComponent(Face* face, double value);
     std::map<Face*, double> getSpComponents();
+    std::string toString() override;
+
     
 private:
     FvCell* cell;

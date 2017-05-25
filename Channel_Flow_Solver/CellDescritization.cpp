@@ -47,6 +47,32 @@ std::map<Face*, double> CellDescritization::getSuComponents() {
     return suComponents;
 }
 
+std::string CellDescritization::toString() {
+    std::ostringstream output;
+    output<<"coefficients: ";
+    std::map<FvCell*, double>::iterator it = coefficients.begin();
+    while(it!=coefficients.end()){
+        output<<","<<it->second;
+        it++;
+    }
+    output<<std::endl;
+    output<<"su components: ";
+    std::map<Face*, double>::iterator it1 = suComponents.begin();
+    while(it1!=suComponents.end()){
+        output<<","<<it1->second;
+        it1++;
+    }
+    output<<std::endl;
+    output<<"sp components: ";
+    std::map<Face*, double>::iterator it2 = spComponents.begin();
+    while(it2!=spComponents.end()){
+        output<<","<<it2->second;
+        it2++;
+    }
+    
+    return output.str();
+}
+
 
 
 
