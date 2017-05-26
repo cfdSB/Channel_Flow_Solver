@@ -43,5 +43,16 @@ void BoundaryConditionsManager::createBoundaryCondition(std::string plane, doubl
     createBoundaryCondition(BoundaryCondition::BcType::FIXED_VALUE, matchingFaces, bcValue);
 }
 
+void BoundaryConditionsManager::printBoundaryConditionsReport() {
+    std::vector<BoundaryCondition*>::iterator it = allBoundaryConditions->begin();
+    while(it!= allBoundaryConditions->end()){
+        BoundaryCondition* bc = *it;
+        std::cout<<"---------"<<std::endl;
+        std::cout<<bc->toString()<<std::endl;
+        it++;
+    }
+}
+
+
 
 
