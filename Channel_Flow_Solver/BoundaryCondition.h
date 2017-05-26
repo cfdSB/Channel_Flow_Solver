@@ -15,8 +15,9 @@
 #define BOUNDARYCONDITION_H
 #include "Face.h"
 #include <vector>
+#include "Object.h"
 
-class BoundaryCondition {
+class BoundaryCondition: public Object {
     
 public:
     enum BcType {FIXED_VALUE, ADIABATIC};
@@ -27,7 +28,8 @@ public:
     BcType getType();
     std::vector<Face*> getFaces();
     double getValue();
-    
+    std::string toString() override;
+
 private:
     BcType type;
     std::vector<Face*> faces;

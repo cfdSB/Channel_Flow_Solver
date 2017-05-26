@@ -12,6 +12,7 @@
  */
 
 #include "BoundaryCondition.h"
+#include <sstream>
 
 BoundaryCondition::BoundaryCondition(BcType type, std::vector<Face*> faces, double value)
 :type(type), faces(faces), value(value){
@@ -33,6 +34,19 @@ std::vector<Face*> BoundaryCondition::getFaces() {
 
 double BoundaryCondition::getValue() {
     return value;
+}
+
+std::string BoundaryCondition::toString() {
+    std::ostringstream str;
+    if(type == BcType::FIXED_VALUE){
+        str<<"BcType : Fixed Value"<<std::endl;
+    }else if(type == BcType::ADIABATIC){
+        str << "BcType : Adiabatic"<<std::endl;
+    }
+    str << "Number of faces: " << faces.size() << std::endl;
+    str << "Bc Value: " << value << std::endl;
+    
+    return str.str();
 }
 
 
