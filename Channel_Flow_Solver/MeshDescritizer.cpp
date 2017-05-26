@@ -15,23 +15,25 @@
 #include "MeshUtilities.h"
 #include "VolumeMesh.h"
 
-MeshDescritizer::MeshDescritizer() {
-    allDescritizations = new std::vector<CellDescritization*>();
+MeshDescritizer::MeshDescritizer(VolumeMesh* mesh):mesh(mesh) {
+    allDescritizations = new std::map<FvCell*,CellDescritization*>();
 }
 
 MeshDescritizer::MeshDescritizer(const MeshDescritizer& orig) {
 }
 
 MeshDescritizer::~MeshDescritizer() {
-    size_t size = allDescritizations->size();
-    for(size_t i=0; i<size; i++){
-        CellDescritization* des = (*allDescritizations)[i];
-        delete des;
+    std::map<FvCell*, CellDescritization*>::iterator it = allDescritizations->begin();
+    while(it!=allDescritizations->end()){
+        std::pair<FvCell*, CellDescritization*> p = *it;
+        CellDescritization* cd = p.second;
+        delete cd;
+        it++;
     }
     delete allDescritizations;
 }
 
-void MeshDescritizer::computeDiscretizationCoefficients(VolumeMesh* mesh) {
+void MeshDescritizer::computeDiscretizationCoefficients() {
     std::vector<FvCell*>* allCells = mesh->getCells();
     for(size_t i=0; i< allCells->size(); i++){
         FvCell* cell = (*allCells)[i];
@@ -43,7 +45,7 @@ void MeshDescritizer::computeDiscretizationCoefficients(VolumeMesh* mesh) {
 void MeshDescritizer::generateDescritizationCoefficients(FvCell* cell) {
     //create a discretization object
     CellDescritization* cd = new CellDescritization(cell);
-    allDescritizations->push_back(cd);
+    allDescritizations->insert(std::make_pair(cell, cd));
     
     //grab all faces and compute coefficients
     Face** faces = cell->getFaces();
@@ -76,15 +78,21 @@ void MeshDescritizer::generateDescritizationCoefficients(FvCell* cell) {
 }
 
 void MeshDescritizer::printCoefficients() {
-    std::vector<CellDescritization*>::iterator it = allDescritizations->begin();
+    std::map<FvCell*, CellDescritization*>::iterator it = allDescritizations->begin();
     while(it!=allDescritizations->end()){
         std::cout<<"---------"<<std::endl;
-        std::string output = (*it)->toString();
+        CellDescritization* cd = (*it).second;
+        std::string output = cd->toString();
         std::cout<<output<<std::endl;
         it++;
         
     }
 }
+
+std::map<FvCell*, CellDescritization*>* MeshDescritizer::getDescritizations() {
+    return allDescritizations;
+}
+
 
 
 

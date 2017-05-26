@@ -16,6 +16,7 @@
 
 #include "CellDescritization.h"
 #include <vector>
+#include <map>
 #include "FvCell.h"
 #include "Face.h"
 
@@ -24,13 +25,15 @@ class VolumeMesh;   //forward declaration
 class MeshDescritizer {
     
 public:
-    MeshDescritizer();
+    MeshDescritizer(VolumeMesh* mesh);
     MeshDescritizer(const MeshDescritizer& orig);
     virtual ~MeshDescritizer();
-    void computeDiscretizationCoefficients(VolumeMesh* mesh);
+    void computeDiscretizationCoefficients();
     void printCoefficients();
+    std::map<FvCell*, CellDescritization*>* getDescritizations();
 private:
-    std::vector<CellDescritization*>* allDescritizations;
+    VolumeMesh* mesh;
+    std::map<FvCell*, CellDescritization*>* allDescritizations;
     void generateDescritizationCoefficients(FvCell* cell);
 };
 
