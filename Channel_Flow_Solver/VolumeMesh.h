@@ -33,6 +33,7 @@ public:
     std::vector<FvCell*>* getCells();
     std::vector<Face*>* getFaces();
     Face* findFace(Face* faceToCompare, double tolerance);
+    std::vector<Face*> findFaces(std::string plane, double value, double tolerance);
     void printCells();
 private:
     std::vector<Point*>* allPoints;

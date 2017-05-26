@@ -12,7 +12,7 @@
  */
 
 #include <vector>
-
+#include <cmath>
 #include "VolumeMesh.h"
 
 VolumeMesh::VolumeMesh() {
@@ -109,6 +109,26 @@ void VolumeMesh::printCells() {
         
     }
 }
+
+std::vector<Face*> VolumeMesh::findFaces(std::string plane, double value, double tolerance) {
+    std::vector<Face*> faces;
+    
+    for(int i=0; i< allFaces->size(); i++){
+        Face* face = (*allFaces)[i];
+        double xCoord = 0.0;
+        if(plane == "x"){
+            xCoord = face->getCentroid()->getCoordinates()[0];
+        }
+        double diff = xCoord - value;
+        double absValue = std::abs(diff);
+        if(absValue <= tolerance){
+            faces.push_back(face);
+        }
+    }
+    
+    return faces;
+}
+
 
 
 
