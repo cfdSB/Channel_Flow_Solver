@@ -23,7 +23,7 @@ public:
     virtual ~BoundaryConditionsManager();
     std::vector<BoundaryCondition*>* getBoundaryConditions();
     void createBoundaryCondition(BoundaryCondition::BcType type, std::vector<Face*> faces, double value);
-    void createBoundaryCondition(std::string plane, double faceCoordinate, double faceTolerance, double bcValue);
+    void createBoundaryCondition(std::string plane, double faceCoordinate, double faceTolerance, BoundaryCondition::BcType type,double bcValue);
     void printBoundaryConditionsReport();
 private:
     std::vector<BoundaryCondition*>* allBoundaryConditions;

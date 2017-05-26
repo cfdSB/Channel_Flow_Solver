@@ -38,9 +38,9 @@ void BoundaryConditionsManager::createBoundaryCondition(BoundaryCondition::BcTyp
     allBoundaryConditions->push_back(bc);
 }
 
-void BoundaryConditionsManager::createBoundaryCondition(std::string plane, double faceCoordinate, double faceTolerance, double bcValue) {
+void BoundaryConditionsManager::createBoundaryCondition(std::string plane, double faceCoordinate, double faceTolerance, BoundaryCondition::BcType type, double bcValue) {
     std::vector<Face*> matchingFaces = mesh->findFaces(plane,faceCoordinate,faceTolerance);
-    createBoundaryCondition(BoundaryCondition::BcType::FIXED_VALUE, matchingFaces, bcValue);
+    createBoundaryCondition(type, matchingFaces, bcValue);
 }
 
 void BoundaryConditionsManager::printBoundaryConditionsReport() {
