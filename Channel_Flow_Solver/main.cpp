@@ -20,9 +20,10 @@
 #include "Face.h"
 #include "MeshBuilder.h"
 #include "MeshDescritizer.h"
+#include "BoundaryConditionsManager.h"
 
 using namespace std;
-void printCell(FvCell* cell);
+
 
 /*
  * 
@@ -40,9 +41,14 @@ int main(int argc, char** argv) {
     mesher.printMeshReport();
     
     VolumeMesh* mesh = mesher.getVolumeMesh();
-    std::unique_ptr<MeshDescritizer> discretizer(new MeshDescritizer());
-    discretizer->computeDiscretizationCoefficients(mesh);
+    std::unique_ptr<MeshDescritizer> discretizer(new MeshDescritizer(mesh));
+    discretizer->computeDiscretizationCoefficients();
     discretizer->printCoefficients();
+    
+    std::unique_ptr<BoundaryConditionsManager> bcManager (new BoundaryConditionsManager(mesh));
+    std::string plane = "x"; double coord = 0.0; double tolerance = 1.0e-6; double bcValue = 100.00;
+    bcManager->createBoundaryCondition(plane, coord, tolerance, BoundaryCondition::BcType::FIXED_VALUE, bcValue);
+    bcManager->printBoundaryConditionsReport();
 
     return 0;
 }
