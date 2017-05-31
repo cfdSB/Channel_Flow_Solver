@@ -48,8 +48,13 @@ int main(int argc, char** argv) {
     std::unique_ptr<BoundaryConditionsManager> bcManager (new BoundaryConditionsManager(mesh));
     std::string plane = "x"; double coord = 0.0; double tolerance = 1.0e-6; double bcValue = 100.00;
     bcManager->createBoundaryCondition(plane, coord, tolerance, BoundaryCondition::BcType::FIXED_VALUE, bcValue);
+    std::string plane2 = "z"; double coord2 = 0.0; double tolerance2 = 1.0e-6; double bcValue2 = 0.00;
+    bcManager->createBoundaryCondition(plane2, coord2, tolerance2, BoundaryCondition::BcType::ADIABATIC, bcValue2);
     bcManager->printBoundaryConditionsReport();
 
+    discretizer->updateCoefficients(bcManager->getBoundaryConditions());
+    discretizer->printCoefficients();
+    
     return 0;
 }
 
