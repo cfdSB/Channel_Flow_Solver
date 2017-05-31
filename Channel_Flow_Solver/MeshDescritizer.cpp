@@ -14,6 +14,7 @@
 #include "MeshDescritizer.h"
 #include "MeshUtilities.h"
 #include "VolumeMesh.h"
+#include "BoundaryCondition.h"
 
 MeshDescritizer::MeshDescritizer(VolumeMesh* mesh):mesh(mesh) {
     allDescritizations = new std::map<FvCell*,CellDescritization*>();
@@ -93,8 +94,48 @@ std::map<FvCell*, CellDescritization*>* MeshDescritizer::getDescritizations() {
     return allDescritizations;
 }
 
+void MeshDescritizer::updateCoefficients(std::vector<BoundaryCondition*> *conditions) {
+    
+    for(int i=0; i< conditions->size(); i++){
+        BoundaryCondition* bc = (*conditions)[i];
+        std::vector<Face*> *faces = bc->getFaces();
+        for(int j=0; j<faces->size(); j++){
+            Face* face = (*faces)[j];
+            //find connected cell
+            FvCell* cell = face->getCell1();
+            if(cell == NULL){
+                cell = face->getCell2();
+            }
+            
+            //adjust su or sp component of the particular face
+            CellDescritization* des = allDescritizations->find(cell)->second;
+            if(bc->getType() == BoundaryCondition::FIXED_VALUE){
+                adjustSuComponent(face, des, bc->getValue());                
+            }else if(bc->getType() == BoundaryCondition::ADIABATIC){
+                adjustSuComponent(face, des, 0.0);
+                adjustSpComponent(face, des, 0.0);
+            }
+        }
+    }
+}
 
+void MeshDescritizer::adjustSuComponent(Face* face, CellDescritization* des, double value) {
+    std::map<Face*, double> *suCoeffs = des->getSuComponents();
+    std::map<Face*, double>::iterator it = suCoeffs->find(face);
+    if (it != suCoeffs->end()) {
+        double d = it->second;
+        double adjustedValue = d * value;
+        it->second = adjustedValue;
+    }
+}
 
-
-
+void MeshDescritizer::adjustSpComponent(Face* face, CellDescritization* des, double value) {
+    std::map<Face*, double> *spCoeffs = des->getSpComponents();
+    std::map<Face*, double>::iterator it = spCoeffs->find(face);
+    if (it != spCoeffs->end()) {
+        double d = it->second;
+        double adjustedValue = d * value;
+        it->second = adjustedValue;
+    }
+}
 
