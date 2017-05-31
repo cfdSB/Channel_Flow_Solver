@@ -28,8 +28,8 @@ BoundaryCondition::BcType BoundaryCondition::getType() {
     return type;
 }
 
-std::vector<Face*> BoundaryCondition::getFaces() {
-    return faces;
+std::vector<Face*>* BoundaryCondition::getFaces() {
+    return &faces;
 }
 
 double BoundaryCondition::getValue() {

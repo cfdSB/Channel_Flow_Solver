@@ -26,7 +26,7 @@ public:
     BoundaryCondition(const BoundaryCondition& orig);
     virtual ~BoundaryCondition();    
     BcType getType();
-    std::vector<Face*> getFaces();
+    std::vector<Face*>* getFaces();
     double getValue();
     std::string toString() override;
 
