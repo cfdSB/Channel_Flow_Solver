@@ -115,11 +115,15 @@ std::vector<Face*> VolumeMesh::findFaces(std::string plane, double value, double
     
     for(int i=0; i< allFaces->size(); i++){
         Face* face = (*allFaces)[i];
-        double xCoord = 0.0;
+        double coord = 0.0;
         if(plane == "x"){
-            xCoord = face->getCentroid()->getCoordinates()[0];
+            coord = face->getCentroid()->getCoordinates()[0];
+        }else if(plane == "z"){
+            coord = face->getCentroid()->getCoordinates()[2];
+        }else if(plane == "y"){
+            coord = face->getCentroid()->getCoordinates()[1];
         }
-        double diff = xCoord - value;
+        double diff = coord - value;
         double absValue = std::abs(diff);
         if(absValue <= tolerance){
             faces.push_back(face);
