@@ -26,19 +26,19 @@ public:
     CellDescritization(const CellDescritization& orig);
     virtual ~CellDescritization();
     void addCoefficient(FvCell* cell, double value);
-    std::map<FvCell*, double> getCoefficients();
-    std::map<Face*, double> getSuComponents();
+    std::map<FvCell*, double>* getCoefficients();
+    std::map<Face*, double>* getSuComponents();
     void addSuComponent(Face* face, double value);
     void addSpComponent(Face* face, double value);
-    std::map<Face*, double> getSpComponents();
+    std::map<Face*, double>* getSpComponents();
     std::string toString() override;
 
     
 private:
     FvCell* cell;
-    std::map<FvCell*, double> coefficients;
-    std::map<Face*, double> suComponents; //constant part of source term linearization    
-    std::map<Face*, double> spComponents;  //variable dependent part of source term linearization and/or artifact
+    std::map<FvCell*, double> *coefficients;
+    std::map<Face*, double> *suComponents; //constant part of source term linearization    
+    std::map<Face*, double> *spComponents;  //variable dependent part of source term linearization and/or artifact
                                            //of the the cell being a boundary cell
 };
 
