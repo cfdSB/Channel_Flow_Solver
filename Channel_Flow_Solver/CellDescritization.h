@@ -25,11 +25,15 @@ public:
     CellDescritization(FvCell* cell);
     CellDescritization(const CellDescritization& orig);
     virtual ~CellDescritization();
+    
     void addCoefficient(FvCell* cell, double value);
     std::map<FvCell*, double>* getCoefficients();
     std::map<Face*, double>* getSuComponents();
     void addSuComponent(Face* face, double value);
     void addSpComponent(Face* face, double value);
+    void scaleSuComponent(Face* face, double scaleFactor);
+    void scaleSpComponent(Face* face, double scaleFactor);
+    void scaleAllComponentsAndCoefficients(double scaleFactor);
     std::map<Face*, double>* getSpComponents();
     std::string toString() override;
 

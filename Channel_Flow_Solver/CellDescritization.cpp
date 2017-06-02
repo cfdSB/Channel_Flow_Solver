@@ -80,10 +80,45 @@ std::string CellDescritization::toString() {
     return output.str();
 }
 
+void CellDescritization::scaleSuComponent(Face* face, double scaleFactor) {
+    std::map<Face*, double>::iterator it = suComponents->find(face);
+    if (it != suComponents->end()) {
+        double d = it->second;
+        double adjustedValue = d * scaleFactor;
+        it->second = adjustedValue;
+    }
+}
 
+void CellDescritization::scaleSpComponent(Face* face, double scaleFactor) {
+    std::map<Face*, double>::iterator it = spComponents->find(face);
+    if (it != spComponents->end()) {
+        double d = it->second;
+        double adjustedValue = d * scaleFactor;
+        it->second = adjustedValue;
+    }
+}
 
-
-
-
-
+void CellDescritization::scaleAllComponentsAndCoefficients(double scaleFactor) {
+    
+    std::map<Face*, double>::iterator it;
+    for(it=suComponents->begin(); it!=suComponents->end(); it++) {
+        double d = it->second;
+        double adjustedValue = d * scaleFactor;
+        it->second = adjustedValue;
+    }
+    
+    for(it= spComponents->begin(); it!= spComponents->end(); it++){
+        double d = it->second;
+        double adjustedValue = d * scaleFactor;
+        it->second = adjustedValue;
+    }
+    
+    std::map<FvCell*, double>::iterator it2;
+    
+    for(it2=coefficients->begin(); it2!=coefficients->end(); it2++){
+        double d = it2->second;
+        double adjustedValue = d * scaleFactor;
+        it2->second = adjustedValue;
+    }
+}
 
