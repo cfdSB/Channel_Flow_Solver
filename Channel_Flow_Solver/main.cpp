@@ -21,6 +21,7 @@
 #include "MeshBuilder.h"
 #include "MeshDescritizer.h"
 #include "BoundaryConditionsManager.h"
+#include "PhysicsContinuum.h"
 
 using namespace std;
 
@@ -52,7 +53,11 @@ int main(int argc, char** argv) {
     bcManager->createBoundaryCondition(plane2, coord2, tolerance2, BoundaryCondition::BcType::ADIABATIC, bcValue2);
     bcManager->printBoundaryConditionsReport();
 
+    PhysicsContinuum pc;
+    pc.setThermalConductivity(10);
+    
     discretizer->updateCoefficients(bcManager->getBoundaryConditions());
+    discretizer->updateCoefficients(&pc);
     discretizer->printCoefficients();
     
     return 0;
