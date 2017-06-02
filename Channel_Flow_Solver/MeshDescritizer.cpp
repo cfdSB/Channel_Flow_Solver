@@ -109,33 +109,23 @@ void MeshDescritizer::updateCoefficients(std::vector<BoundaryCondition*> *condit
             
             //adjust su or sp component of the particular face
             CellDescritization* des = allDescritizations->find(cell)->second;
-            if(bc->getType() == BoundaryCondition::FIXED_VALUE){
-                adjustSuComponent(face, des, bc->getValue());                
+            if(bc->getType() == BoundaryCondition::FIXED_VALUE){       
+                des->scaleSuComponent(face, bc->getValue());
             }else if(bc->getType() == BoundaryCondition::ADIABATIC){
-                adjustSuComponent(face, des, 0.0);
-                adjustSpComponent(face, des, 0.0);
+                des->scaleSuComponent(face, 0.0);
+                des->scaleSpComponent(face, 0.0);
             }
         }
     }
 }
 
-void MeshDescritizer::adjustSuComponent(Face* face, CellDescritization* des, double value) {
-    std::map<Face*, double> *suCoeffs = des->getSuComponents();
-    std::map<Face*, double>::iterator it = suCoeffs->find(face);
-    if (it != suCoeffs->end()) {
-        double d = it->second;
-        double adjustedValue = d * value;
-        it->second = adjustedValue;
-    }
-}
 
-void MeshDescritizer::adjustSpComponent(Face* face, CellDescritization* des, double value) {
-    std::map<Face*, double> *spCoeffs = des->getSpComponents();
-    std::map<Face*, double>::iterator it = spCoeffs->find(face);
-    if (it != spCoeffs->end()) {
-        double d = it->second;
-        double adjustedValue = d * value;
-        it->second = adjustedValue;
+
+void MeshDescritizer::updateCoefficients(PhysicsContinuum* pc){
+    std::map<FvCell*, CellDescritization*>::iterator it;
+    for(it=allDescritizations->begin(); it!= allDescritizations->end(); it++){
+        CellDescritization* cds = it->second;
+        cds->scaleAllComponentsAndCoefficients(pc->getThermalConductivity());
     }
 }
 
