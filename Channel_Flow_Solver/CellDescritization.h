@@ -35,6 +35,7 @@ public:
     void scaleSpComponent(Face* face, double scaleFactor);
     void scaleAllComponentsAndCoefficients(double scaleFactor);
     std::map<Face*, double>* getSpComponents();
+    FvCell* getCell();
     std::string toString() override;
 
     

@@ -122,3 +122,8 @@ void CellDescritization::scaleAllComponentsAndCoefficients(double scaleFactor) {
     }
 }
 
+FvCell* CellDescritization::getCell() {
+    return cell;
+}
+
+
