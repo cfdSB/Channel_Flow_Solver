@@ -16,7 +16,7 @@
 #include "VolumeMesh.h"
 #include "BoundaryCondition.h"
 
-MeshDescritizer::MeshDescritizer(VolumeMesh* mesh):mesh(mesh) {
+MeshDescritizer::MeshDescritizer(VolumeMesh* mesh):mesh(mesh), matrix(NULL) {
     allDescritizations = new std::map<FvCell*,CellDescritization*>();
 }
 
@@ -32,6 +32,10 @@ MeshDescritizer::~MeshDescritizer() {
         it++;
     }
     delete allDescritizations;
+    
+    if(matrix!=NULL){
+        delete matrix;
+    }
 }
 
 void MeshDescritizer::computeDiscretizationCoefficients() {
@@ -120,7 +124,6 @@ void MeshDescritizer::updateCoefficients(std::vector<BoundaryCondition*> *condit
 }
 
 
-
 void MeshDescritizer::updateCoefficients(PhysicsContinuum* pc){
     std::map<FvCell*, CellDescritization*>::iterator it;
     for(it=allDescritizations->begin(); it!= allDescritizations->end(); it++){
@@ -128,4 +131,92 @@ void MeshDescritizer::updateCoefficients(PhysicsContinuum* pc){
         cds->scaleAllComponentsAndCoefficients(pc->getThermalConductivity());
     }
 }
+
+Matrix* MeshDescritizer::buildMatrix() {
+    
+    long numberOfVariables = allDescritizations->size();
+    if(matrix== NULL){
+        matrix = new Matrix(numberOfVariables);
+    }
+    
+    //initialize all coefficients to zero
+    for(long i=0; i<numberOfVariables; i++){
+        for(long j=0; j<numberOfVariables; j++){
+            matrix->setCoefficient(i, j, 0.0);
+        }
+    }    
+    
+    for(long i=0; i<numberOfVariables; i++){
+        matrix->setRhs(i, 0.0);
+    }
+    
+    //set solution variables (cells)
+    typedef std::map<FvCell*, CellDescritization*>::iterator cellP_desc_map;
+    long i = 0;
+    for(cellP_desc_map it = allDescritizations->begin(); it!= allDescritizations->end(); it++){
+        CellDescritization* cd = it->second;
+        matrix->setVariable(i, cd->getCell());
+        i++;
+    }
+    
+    //populate matrix coefficients
+    i = 0;
+    for (cellP_desc_map it = allDescritizations->begin(); it != allDescritizations->end(); it++) {
+        
+        CellDescritization* cd = it->second;
+        std::map<FvCell*, double>* coeffs = cd->getCoefficients();
+
+        //loop through each neighbor cell and update matrix
+        typedef std::map<FvCell*, double>::iterator cellP_double_map;
+        double cellCoefficient = 0; //the coefficient of the cell itself
+        for (cellP_double_map it = coeffs->begin(); it != coeffs->end(); it++) {
+            FvCell* neighborCell = it->first;
+            double value = it->second;
+            
+            long rowNumber = i;
+            long columnNumber = matrix->getVariableIndex(neighborCell);
+            
+            cellCoefficient = cellCoefficient + value;  //calcuation of ap
+            
+            value = value* -1.0;    // matrix rearrangement needs this negation.
+            matrix->setCoefficient(rowNumber, columnNumber, value);
+        }
+        
+        //update the coefficient of the cell itself
+        std::map<Face*, double>* spComps = cd->getSpComponents();
+        typedef std::map<Face*, double>::iterator faceP_double_map;
+        double spCoefficient = 0; //the coefficient of the cell itself
+        for (faceP_double_map it = spComps->begin(); it != spComps->end(); it++) {
+            double value = it->second;
+            spCoefficient = spCoefficient + value;
+        }
+        cellCoefficient = cellCoefficient - spCoefficient; //sum of all neighbor cell coeffs - sp coefficients
+        long rowNumber = i;
+        long columnNumber = i;
+        matrix->setCoefficient(rowNumber, columnNumber, cellCoefficient);
+
+        i++;
+    }
+    
+    //populate RHS coefficients
+    i = 0;
+    for (cellP_desc_map it = allDescritizations->begin(); it != allDescritizations->end(); it++) {
+        
+        CellDescritization* cd = it->second;
+        
+        std::map<Face*, double>* suComps = cd->getSuComponents();
+        typedef std::map<Face*, double>::iterator faceP_double_map;
+        double suCoefficient = 0; //the coefficient of the cell itself
+        for (faceP_double_map it = suComps->begin(); it != suComps->end(); it++) {
+            double value = it->second;
+            suCoefficient = suCoefficient + value;
+        }
+        matrix->setRhs(i, suCoefficient);
+        
+        i++;
+    }
+    
+    return matrix;
+}
+
 
