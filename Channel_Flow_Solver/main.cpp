@@ -31,11 +31,11 @@ using namespace std;
  */
 int main(int argc, char** argv) {
        
-    int xCells = 5;
-    int yCells = 5;
-    int zCells = 5;
+    int xCells = 2;
+    int yCells = 2;
+    int zCells = 2;
     
-    double xMin = 0.0, xMax = 1.0, yMin = 0.0, yMax = 1.0, zMin = 0.0, zMax = 1.0;
+    double xMin = 0.0, xMax = 0.2, yMin = 0.0, yMax = 0.4, zMin = 0.0, zMax = 0.8;
     
     MeshBuilder mesher;
     mesher.buildMesh(xMin, xMax, yMin, yMax, zMin, zMax, xCells, yCells, zCells);
@@ -59,6 +59,11 @@ int main(int argc, char** argv) {
     discretizer->updateCoefficients(bcManager->getBoundaryConditions());
     discretizer->updateCoefficients(&pc);
     discretizer->printCoefficients();
+    
+    Matrix* coefficientMatrix = discretizer->buildMatrix();
+    std::string output = coefficientMatrix->toString();
+    std::cout<<output;
+    
     
     return 0;
 }
