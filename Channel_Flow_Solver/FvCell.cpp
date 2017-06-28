@@ -5,8 +5,11 @@
  */
 #include "FvCell.h"
 
+long FvCell::idCounter = 0;
+
 FvCell::FvCell(Point* centroid, double dx, double dy, double dz): centroid(centroid), dx(dx),
         dy(dy), dz(dz){
+    cellID = idCounter++;
 }
 
 Point* FvCell::getCentroid() {
@@ -39,9 +42,14 @@ Face** FvCell::getFaces() {
     return faces;
 }
 
+long FvCell::getID() {
+    return cellID;
+}
+
 std::string FvCell::toString() {
     std::ostringstream output;
     std::string pointOutput= centroid->toString();
+    output<< "Cell ID: " << cellID;
     output << "Cell Centroid: " << pointOutput << "\n";
     output << "Cell Size:" << dx << "," << dy <<","<< dz << "\n";
 
