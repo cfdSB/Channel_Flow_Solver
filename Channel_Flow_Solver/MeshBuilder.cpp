@@ -140,7 +140,7 @@ std::vector<Face*> MeshBuilder:: buildFaces(FvCell* cell){
     //z+ face
     double zp_x = cellCentroid[0];
     double zp_y = cellCentroid[1];
-    double zp_z = cellCentroid[2] + cell->getDy()/2.0;
+    double zp_z = cellCentroid[2] + cell->getDz()/2.0;
     
     std::unique_ptr<Point> tmpPointZp(new Point(zp_x, zp_y, zp_z));
     std::unique_ptr<Face> tmpFaceZp (new Face(tmpPointZp.get(), cell->getDx(), cell->getDy())); 
