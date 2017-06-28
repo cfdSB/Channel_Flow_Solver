@@ -85,8 +85,8 @@ std::string Matrix::toString() {
         for(long j=0; j< numberOfVariables; j++){
             output<<coefficientArray[i][j] << " ";
         }
-        output<<i<< " ";
-        output<<rhsArray[i];
+        output<<"\t" << (*(variableArray+i))->getID();
+        output<<"\t"<<rhsArray[i];
         output<<"\n";
     }
    

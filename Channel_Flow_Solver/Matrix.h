@@ -16,10 +16,25 @@
 
 #include "Object.h"
 #include <sstream>
+#include"FvCell.h"
 
 class FvCell;   //forward declaration
 
 class Matrix: public Object {
+
+public:
+    double** getCoefficientArray() const {
+        return coefficientArray;
+    }
+
+    long getNumberOfVariables() const {
+        return numberOfVariables;
+    }
+
+    double* getRhsArray() const {
+        return rhsArray;
+    }
+
 public:
     Matrix(long numberOfVariables);
     Matrix(const Matrix& orig);
