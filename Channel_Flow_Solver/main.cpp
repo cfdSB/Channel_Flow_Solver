@@ -32,9 +32,9 @@ using namespace std;
  */
 int main(int argc, char** argv) {
        
-    int xCells = 5;
-    int yCells = 5;
-    int zCells = 5;
+    int xCells = 6;
+    int yCells = 6;
+    int zCells = 6;
     
     double xMin = 0.0, xMax = 0.3, yMin = 0.0, yMax = 0.3, zMin = 0.0, zMax = 0.3;
     
@@ -48,8 +48,9 @@ int main(int argc, char** argv) {
     discretizer->printCoefficients();
     
     std::unique_ptr<BoundaryConditionsManager> bcManager (new BoundaryConditionsManager(mesh));
+    //std::string plane = "x"; double coord = 0.0; double tolerance = 1.0e-6; double bcValue = 500.00;
     std::string plane = "x"; double coord = 0.0; double tolerance = 1.0e-6; double bcValue = 500.00;
-    bcManager->createBoundaryCondition(plane, coord, tolerance, BoundaryCondition::BcType::FIXED_VALUE, bcValue);
+    bcManager->createBoundaryCondition(plane, coord, tolerance, BoundaryCondition::BcType::FIXED_FLUX, bcValue);
     std::string plane2 = "z"; double coord2 = 0.0; double tolerance2 = 1.0e-6; double bcValue2 = 0.00;
     bcManager->createBoundaryCondition(plane2, coord2, tolerance2, BoundaryCondition::BcType::ADIABATIC, bcValue2);
     bcManager->createBoundaryCondition("x", 0.3, 1.0e-6, BoundaryCondition::BcType::FIXED_VALUE,300.00);
@@ -61,8 +62,8 @@ int main(int argc, char** argv) {
     PhysicsContinuum pc;
     pc.setThermalConductivity(10);
     
+    discretizer->updateCoefficients(&pc); //needs to be done before correcting coefficients with BCs.
     discretizer->updateCoefficients(bcManager->getBoundaryConditions());
-    discretizer->updateCoefficients(&pc);
     discretizer->printCoefficients();
     
     Matrix* coefficientMatrix = discretizer->buildMatrix();
