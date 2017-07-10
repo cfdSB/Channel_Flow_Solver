@@ -33,6 +33,7 @@ public:
     void addSpComponent(Face* face, double value);
     void scaleSuComponent(Face* face, double scaleFactor);
     void scaleSpComponent(Face* face, double scaleFactor);
+    void appendSuComponent(Face* face, double appendValue);
     void scaleAllComponentsAndCoefficients(double scaleFactor);
     std::map<Face*, double>* getSpComponents();
     FvCell* getCell();

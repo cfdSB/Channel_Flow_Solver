@@ -118,6 +118,11 @@ void MeshDescritizer::updateCoefficients(std::vector<BoundaryCondition*> *condit
             }else if(bc->getType() == BoundaryCondition::ADIABATIC){
                 des->scaleSuComponent(face, 0.0);
                 des->scaleSpComponent(face, 0.0);
+            }else if(bc->getType() == BoundaryCondition::FIXED_FLUX){
+                des->scaleSuComponent(face, 0.0);
+                double appendValue = bc->getValue()*face->getArea();
+                des->appendSuComponent(face, appendValue);
+                des->scaleSpComponent(face, 0.0);
             }
         }
     }

@@ -126,4 +126,15 @@ FvCell* CellDescritization::getCell() {
     return cell;
 }
 
+void CellDescritization::appendSuComponent(Face* face, double appendValue) {
+    std::map<Face*, double>::iterator it = suComponents->find(face);
+    if (it != suComponents->end()) {
+        double d = it->second;
+        double adjustedValue = d + appendValue;
+        it->second = adjustedValue;
+        //std::cout<<"Flux su component: " << it->second<< std::endl;
+    }
+}
+
+
 

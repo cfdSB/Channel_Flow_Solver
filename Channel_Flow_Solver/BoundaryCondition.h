@@ -20,7 +20,7 @@
 class BoundaryCondition: public Object {
     
 public:
-    enum BcType {FIXED_VALUE, ADIABATIC};
+    enum BcType {FIXED_VALUE, ADIABATIC, FIXED_FLUX};
     
     BoundaryCondition(BcType type, std::vector<Face*> faces, double value);
     BoundaryCondition(const BoundaryCondition& orig);
