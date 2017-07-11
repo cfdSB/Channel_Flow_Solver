@@ -63,7 +63,7 @@ void MeshBuilder::buildMesh(double xMin, double xMax, double yMin, double yMax, 
 
 void MeshBuilder::printCell(FvCell* cell){
     std::cout<<"-----------------"<<std::endl;
-    double* centroid = cell->getCentroid()->getCoordinates();
+    const double* centroid = cell->getCentroid()->getCoordinates();
     std::cout<<centroid[0]<<","<<centroid[1]<<","<<centroid[2]<<","<<cell->getDx()<<","<<cell->getDy()<<","<<cell->getDz()<<std::endl;
     
     //print faces
@@ -74,14 +74,14 @@ void MeshBuilder::printCell(FvCell* cell){
 }
 
 void MeshBuilder::printFace(Face* face) {
-    double* centroidF = face->getCentroid()->getCoordinates();
+    const double* centroidF = face->getCentroid()->getCoordinates();
     std::cout << centroidF[0] << "," << centroidF[1] << "," << centroidF[2] << "," << face->getLength() << "," << face->getWidth() << std::endl;
 }
 
 
 std::vector<Face*> MeshBuilder:: buildFaces(FvCell* cell){
     std::vector<Face*> faces;
-    double* cellCentroid = cell->getCentroid()->getCoordinates();
+    const double* cellCentroid = cell->getCentroid()->getCoordinates();
     //x- face
     double xm_x = cellCentroid[0] - cell->getDx()/2.0;
     double xm_y = cellCentroid[1];

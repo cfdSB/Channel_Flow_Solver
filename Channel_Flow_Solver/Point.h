@@ -23,7 +23,7 @@ private:
     
 public:
     Point(double xCoord, double yCoord, double zCoord);
-    double* getCoordinates();
+    const double* getCoordinates() const;
     ~Point();
     std::string toString() override;
 
