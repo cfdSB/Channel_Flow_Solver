@@ -22,7 +22,7 @@ MeshUtilities::MeshUtilities(const MeshUtilities& orig) {
 MeshUtilities::~MeshUtilities() {
 }
 
-double MeshUtilities::findDistance(Point& p1, Point& p2) {
+double MeshUtilities::findDistance(const Point& p1, const Point& p2) {
 
     const double* d1 = p1.getCoordinates();
     const double* d2 = p2.getCoordinates();

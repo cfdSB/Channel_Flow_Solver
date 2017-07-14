@@ -65,7 +65,7 @@ void Matrix::setRhs(long row, double value) {
     rhsArray[row] = value;
 }
 
-long Matrix::getVariableIndex(FvCell* cell) {
+long Matrix::getVariableIndex(const FvCell* cell) {
     long index = -1;
     for(long i=0; i<numberOfVariables; i++){
         FvCell* currentCell = variableArray[i];

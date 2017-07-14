@@ -42,7 +42,7 @@ public:
     void setCoefficient(long row, long column, double value);
     void setVariable(long row, FvCell* cell);
     void setRhs(long row, double value);
-    long getVariableIndex(FvCell* cell);
+    long getVariableIndex(const FvCell* cell);
     std::string toString() override;
 
 private:

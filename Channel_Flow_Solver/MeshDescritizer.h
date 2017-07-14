@@ -33,13 +33,13 @@ public:
     virtual ~MeshDescritizer();
     void computeDiscretizationCoefficients();
     void printCoefficients();
-    std::map<FvCell*, CellDescritization*>* getDescritizations();
+    std::map<const FvCell*, CellDescritization*>* getDescritizations();
     void updateCoefficients(std::vector<BoundaryCondition*> *conditions);
     void updateCoefficients(PhysicsContinuum* pc);
     Matrix* buildMatrix();
 private:
     VolumeMesh* mesh;
-    std::map<FvCell*, CellDescritization*>* allDescritizations;
+    std::map<const FvCell*, CellDescritization*>* allDescritizations;
     void generateDescritizationCoefficients(FvCell* cell);
     Matrix* matrix;
 };

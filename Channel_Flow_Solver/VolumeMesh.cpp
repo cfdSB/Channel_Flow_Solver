@@ -86,8 +86,8 @@ Face* VolumeMesh::findFace(Face* faceToCompare, double tolerance){
     for(int i=0; i< allFaces->size(); i++){
         Face* tmpFace = (*allFaces)[i];
         
-        Point* centroid1 = tmpFace->getCentroid();
-        Point* centroid2 = faceToCompare->getCentroid();
+        const Point* centroid1 = tmpFace->getCentroid();
+        const Point* centroid2 = faceToCompare->getCentroid();
         
         double distance = MeshUtilities::findDistance(*centroid1, *centroid2);
         if(distance < tolerance){

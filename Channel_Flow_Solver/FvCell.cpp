@@ -12,7 +12,7 @@ FvCell::FvCell(Point* centroid, double dx, double dy, double dz): centroid(centr
     cellID = idCounter++;
 }
 
-Point* FvCell::getCentroid() {
+Point* FvCell::getCentroid() const {
     return centroid;
 }
 

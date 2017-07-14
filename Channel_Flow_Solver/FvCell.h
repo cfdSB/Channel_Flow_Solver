@@ -32,7 +32,7 @@ private:
 public:
     FvCell(Point* centroid, double dx, double dy, double dz);
     ~FvCell();
-    Point* getCentroid();
+    Point* getCentroid() const;
     double getDx();
     double getDy();
     double getDz();

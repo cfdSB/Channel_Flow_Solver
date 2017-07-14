@@ -17,16 +17,16 @@
 #include "BoundaryCondition.h"
 
 MeshDescritizer::MeshDescritizer(VolumeMesh* mesh):mesh(mesh), matrix(NULL) {
-    allDescritizations = new std::map<FvCell*,CellDescritization*>();
+    allDescritizations = new std::map<const FvCell*,CellDescritization*>();
 }
 
 MeshDescritizer::MeshDescritizer(const MeshDescritizer& orig) {
 }
 
 MeshDescritizer::~MeshDescritizer() {
-    std::map<FvCell*, CellDescritization*>::iterator it = allDescritizations->begin();
+    std::map<const FvCell*, CellDescritization*>::iterator it = allDescritizations->begin();
     while(it!=allDescritizations->end()){
-        std::pair<FvCell*, CellDescritization*> p = *it;
+        std::pair<const FvCell*, CellDescritization*> p = *it;
         CellDescritization* cd = p.second;
         delete cd;
         it++;
@@ -56,11 +56,11 @@ void MeshDescritizer::generateDescritizationCoefficients(FvCell* cell) {
     Face** faces = cell->getFaces();
     for(int i=0; i<6; i++){
         Face* face = faces[i];
-        FvCell* connectingCell = face->getConnectingCell(cell);
+        const FvCell* connectingCell = face->getConnectingCell(cell);
         
         if(connectingCell == NULL){
             //boundary cell
-            Point* faceCentroid = face->getCentroid();
+            const Point* faceCentroid = face->getCentroid();
             Point* cellCentroid = cell->getCentroid();
             double distance = MeshUtilities::findDistance(*faceCentroid, *cellCentroid);
             double faceArea = face->getArea();
@@ -69,7 +69,7 @@ void MeshDescritizer::generateDescritizationCoefficients(FvCell* cell) {
             cd->addSpComponent(face, -1.0*coeff);
         }else{
             //regular cell
-            Point* connectingCellCentroid = connectingCell->getCentroid();
+            const Point* connectingCellCentroid = connectingCell->getCentroid();
             Point* cellCentroid = cell->getCentroid();
             double distance = MeshUtilities::findDistance(*connectingCellCentroid, *cellCentroid);
             double faceArea = face->getArea();
@@ -83,7 +83,7 @@ void MeshDescritizer::generateDescritizationCoefficients(FvCell* cell) {
 }
 
 void MeshDescritizer::printCoefficients() {
-    std::map<FvCell*, CellDescritization*>::iterator it = allDescritizations->begin();
+    std::map<const FvCell*, CellDescritization*>::iterator it = allDescritizations->begin();
     while(it!=allDescritizations->end()){
         std::cout<<"---------"<<std::endl;
         CellDescritization* cd = (*it).second;
@@ -94,7 +94,7 @@ void MeshDescritizer::printCoefficients() {
     }
 }
 
-std::map<FvCell*, CellDescritization*>* MeshDescritizer::getDescritizations() {
+std::map<const FvCell*, CellDescritization*>* MeshDescritizer::getDescritizations() {
     return allDescritizations;
 }
 
@@ -106,7 +106,7 @@ void MeshDescritizer::updateCoefficients(std::vector<BoundaryCondition*> *condit
         for(int j=0; j<faces->size(); j++){
             Face* face = (*faces)[j];
             //find connected cell
-            FvCell* cell = face->getCell1();
+            const FvCell* cell = face->getCell1();
             if(cell == NULL){
                 cell = face->getCell2();
             }
@@ -130,7 +130,7 @@ void MeshDescritizer::updateCoefficients(std::vector<BoundaryCondition*> *condit
 
 
 void MeshDescritizer::updateCoefficients(PhysicsContinuum* pc){
-    std::map<FvCell*, CellDescritization*>::iterator it;
+    std::map<const FvCell*, CellDescritization*>::iterator it;
     for(it=allDescritizations->begin(); it!= allDescritizations->end(); it++){
         CellDescritization* cds = it->second;
         cds->scaleAllComponentsAndCoefficients(pc->getThermalConductivity());
@@ -156,7 +156,7 @@ Matrix* MeshDescritizer::buildMatrix() {
     }
     
     //set solution variables (cells)
-    typedef std::map<FvCell*, CellDescritization*>::iterator cellP_desc_map;
+    typedef std::map<const FvCell*, CellDescritization*>::iterator cellP_desc_map;
     long i = 0;
     for(cellP_desc_map it = allDescritizations->begin(); it!= allDescritizations->end(); it++){
         CellDescritization* cd = it->second;
@@ -169,13 +169,13 @@ Matrix* MeshDescritizer::buildMatrix() {
     for (cellP_desc_map it = allDescritizations->begin(); it != allDescritizations->end(); it++) {
         
         CellDescritization* cd = it->second;
-        std::map<FvCell*, double>* coeffs = cd->getCoefficients();
+        std::map<const FvCell*, double>* coeffs = cd->getCoefficients();
 
         //loop through each neighbor cell and update matrix
-        typedef std::map<FvCell*, double>::iterator cellP_double_map;
+        typedef std::map<const FvCell*, double>::iterator cellP_double_map;
         double cellCoefficient = 0; //the coefficient of the cell itself
         for (cellP_double_map it = coeffs->begin(); it != coeffs->end(); it++) {
-            FvCell* neighborCell = it->first;
+            const FvCell* neighborCell = it->first;
             double value = it->second;
             
             long rowNumber = i;

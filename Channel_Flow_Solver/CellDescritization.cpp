@@ -16,7 +16,7 @@
 #include "FvCell.h"
 
 CellDescritization::CellDescritization(FvCell* cell):cell(cell) {
-    coefficients = new std::map<FvCell*, double>();
+    coefficients = new std::map<const FvCell*, double>();
     suComponents = new std::map<Face*, double> ();
     spComponents = new std::map<Face*, double> ();
 }
@@ -30,11 +30,11 @@ CellDescritization::~CellDescritization() {
     delete spComponents;
 }
 
-std::map<FvCell*, double>* CellDescritization::getCoefficients() {
+std::map<const FvCell*, double>* CellDescritization::getCoefficients() {
     return coefficients;
 }
 
-void CellDescritization::addCoefficient(FvCell* cell, double value) {
+void CellDescritization::addCoefficient(const FvCell* cell, double value) {
     coefficients->insert(std::make_pair(cell, value));
 }
 
@@ -57,7 +57,7 @@ std::map<Face*, double>* CellDescritization::getSuComponents() {
 std::string CellDescritization::toString() {
     std::ostringstream output;
     output<<"coefficients: ";
-    std::map<FvCell*, double>::iterator it = coefficients->begin();
+    std::map<const FvCell*, double>::iterator it = coefficients->begin();
     while(it!=coefficients->end()){
         output<<","<<it->second;
         it++;
@@ -113,7 +113,7 @@ void CellDescritization::scaleAllComponentsAndCoefficients(double scaleFactor) {
         it->second = adjustedValue;
     }
     
-    std::map<FvCell*, double>::iterator it2;
+    std::map<const FvCell*, double>::iterator it2;
     
     for(it2=coefficients->begin(); it2!=coefficients->end(); it2++){
         double d = it2->second;
