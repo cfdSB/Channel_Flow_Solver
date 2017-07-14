@@ -32,11 +32,11 @@ private:
 public:
     FvCell(Point* centroid, double dx, double dy, double dz);
     ~FvCell();
-    Point* getCentroid() const;
-    double getDx();
-    double getDy();
-    double getDz();
-    long getID();
+    const Point* getCentroid() const;
+    double getDx() const;
+    double getDy() const;
+    double getDz() const;
+    long getID() const;
     void setFaces(std::vector<Face*>& faces);
     Face** getFaces();
     std::string toString() override;

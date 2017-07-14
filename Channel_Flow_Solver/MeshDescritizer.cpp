@@ -61,7 +61,7 @@ void MeshDescritizer::generateDescritizationCoefficients(FvCell* cell) {
         if(connectingCell == NULL){
             //boundary cell
             const Point* faceCentroid = face->getCentroid();
-            Point* cellCentroid = cell->getCentroid();
+            const Point* cellCentroid = cell->getCentroid();
             double distance = MeshUtilities::findDistance(*faceCentroid, *cellCentroid);
             double faceArea = face->getArea();
             double coeff = faceArea/distance;
@@ -70,7 +70,7 @@ void MeshDescritizer::generateDescritizationCoefficients(FvCell* cell) {
         }else{
             //regular cell
             const Point* connectingCellCentroid = connectingCell->getCentroid();
-            Point* cellCentroid = cell->getCentroid();
+            const Point* cellCentroid = cell->getCentroid();
             double distance = MeshUtilities::findDistance(*connectingCellCentroid, *cellCentroid);
             double faceArea = face->getArea();
             double coeff = faceArea/distance;

@@ -12,19 +12,19 @@ FvCell::FvCell(Point* centroid, double dx, double dy, double dz): centroid(centr
     cellID = idCounter++;
 }
 
-Point* FvCell::getCentroid() const {
+const Point* FvCell::getCentroid() const {
     return centroid;
 }
 
-double FvCell::getDx() {
+double FvCell::getDx() const {
     return dx;
 }
 
-double FvCell::getDy() {
+double FvCell::getDy() const {
     return dy;
 }
 
-double FvCell::getDz(){
+double FvCell::getDz() const{
     return dz;
 }
 
@@ -42,7 +42,7 @@ Face** FvCell::getFaces() {
     return faces;
 }
 
-long FvCell::getID() {
+long FvCell::getID() const {
     return cellID;
 }
 
