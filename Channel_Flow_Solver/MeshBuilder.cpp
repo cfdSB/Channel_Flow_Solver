@@ -21,7 +21,7 @@ void MeshBuilder::buildMesh(double xMin, double xMax, double yMin, double yMax, 
     double dy = (yMax - yMin)/yCells;
     double dz = (zMax - zMin)/zCells;
     
-    double currentX = 0.0;
+    double currentX = xMin;
     for(int i =0; i< xCells; i++){
         
         if(i==0){
@@ -29,7 +29,7 @@ void MeshBuilder::buildMesh(double xMin, double xMax, double yMin, double yMax, 
         }else{
             currentX = currentX + dx;
         }
-        double currentY = 0.0;
+        double currentY = yMin;
         for(int j = 0; j< yCells; j++){
             
             if (j == 0) {
@@ -38,7 +38,7 @@ void MeshBuilder::buildMesh(double xMin, double xMax, double yMin, double yMax, 
                 currentY = currentY + dy;
             }
 
-            double currentZ = 0.0;
+            double currentZ = zMin;
             for (int k = 0; k < zCells; k++) {
                 
                 if (k == 0) {
