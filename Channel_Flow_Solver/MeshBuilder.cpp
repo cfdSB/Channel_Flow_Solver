@@ -17,6 +17,9 @@ MeshBuilder::~MeshBuilder() {
 
 void MeshBuilder::buildMesh(double xMin, double xMax, double yMin, double yMax, double zMin, double zMax, int xCells, int yCells, int zCells){    
     
+    domain_xMin = xMin; domain_xMax = xMax; domain_yMin = yMin; domain_yMax = yMax; domain_zMin = zMin; domain_zMax = zMax;
+    this->xCells = xCells; this->yCells = yCells; this->zCells = zCells;
+    
     double dx = (xMax - xMin)/xCells;
     double dy = (yMax - yMin)/yCells;
     double dz = (zMax - zMin)/zCells;
@@ -185,6 +188,12 @@ void MeshBuilder::printMeshReport() {
     std::cout<<"Cell Count: "<< volumeMesh->getCellCount()<<std::endl;
     std::cout<<"Face Count: "<< volumeMesh->getFaceCount()<<std::endl;
     std::cout<<"Point Count: "<< volumeMesh->getPointCount()<< std::endl;
+    std::cout<<std::endl;
+    std::cout<<"Expected Cell Count: " << xCells*yCells*zCells<< std::endl;
+    long xFaces = yCells*zCells*(xCells + 1);
+    long yFaces = zCells*xCells*(yCells + 1);
+    long zFaces = xCells*yCells*(zCells + 1);
+    std::cout<<"Expected Face Count: " << xFaces+yFaces+zFaces <<  std::endl;
 }
 
 VolumeMesh* MeshBuilder::getVolumeMesh() {

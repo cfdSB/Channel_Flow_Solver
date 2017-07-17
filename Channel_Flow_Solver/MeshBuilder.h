@@ -30,13 +30,15 @@ public:
     ~MeshBuilder();
     void buildMesh(double xMin, double xMax, double yMin, double yMax, double zMin, double zMax, int xCells, int yCells, int zCells);    
     void printCells();
-    const double faceMatchTolerance = 1e-4;
+    const double faceMatchTolerance = 1e-6;
     void printMeshReport();
     VolumeMesh* getVolumeMesh();
 
 private:
 
     std::unique_ptr<VolumeMesh> volumeMesh;
+    double domain_xMin, domain_xMax, domain_yMin, domain_yMax, domain_zMin, domain_zMax;
+    int xCells, yCells, zCells;
     
     std::vector<Face*> buildFaces(FvCell* cell);
     void printCell(FvCell* cell);
