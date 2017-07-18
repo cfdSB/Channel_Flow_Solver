@@ -17,23 +17,23 @@ Face::~Face(){
     cell2 = 0;
 }
 
-Point* Face::getCentroid() {
+const Point* Face::getCentroid() const {
     return centroid;
 }
 
-double Face::getLength() {
+double Face::getLength() const {
     return length;
 }
 
-double Face::getWidth() {
+double Face::getWidth() const {
     return width;
 }
 
-FvCell* Face::getCell1() {
+const FvCell* Face::getCell1() const {
     return cell1;
 }
 
-FvCell* Face::getCell2() {
+const FvCell* Face::getCell2() const {
     return cell2;
 }
 
@@ -51,6 +51,18 @@ std::string Face::toString() {
     output <<"Face Centroid: " << pointString << "\n";
     output<<"Face Size:" << length << "," << width;
     return output.str();
+}
+
+const FvCell* Face::getConnectingCell(FvCell* cell) const {
+    if(cell1 != cell){
+        return cell1;   //return nonmatching cell
+    }else{
+        return cell2;
+    }
+}
+
+double Face::getArea() const {
+    return length*width;
 }
 
 

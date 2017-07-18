@@ -12,7 +12,7 @@
  */
 
 #include <vector>
-
+#include <cmath>
 #include "VolumeMesh.h"
 
 VolumeMesh::VolumeMesh() {
@@ -86,8 +86,8 @@ Face* VolumeMesh::findFace(Face* faceToCompare, double tolerance){
     for(int i=0; i< allFaces->size(); i++){
         Face* tmpFace = (*allFaces)[i];
         
-        Point* centroid1 = tmpFace->getCentroid();
-        Point* centroid2 = faceToCompare->getCentroid();
+        const Point* centroid1 = tmpFace->getCentroid();
+        const Point* centroid2 = faceToCompare->getCentroid();
         
         double distance = MeshUtilities::findDistance(*centroid1, *centroid2);
         if(distance < tolerance){
@@ -109,6 +109,30 @@ void VolumeMesh::printCells() {
         
     }
 }
+
+std::vector<Face*> VolumeMesh::findFaces(std::string plane, double value, double tolerance) {
+    std::vector<Face*> faces;
+    
+    for(int i=0; i< allFaces->size(); i++){
+        Face* face = (*allFaces)[i];
+        double coord = 0.0;
+        if(plane == "x"){
+            coord = face->getCentroid()->getCoordinates()[0];
+        }else if(plane == "z"){
+            coord = face->getCentroid()->getCoordinates()[2];
+        }else if(plane == "y"){
+            coord = face->getCentroid()->getCoordinates()[1];
+        }
+        double diff = coord - value;
+        double absValue = std::abs(diff);
+        if(absValue <= tolerance){
+            faces.push_back(face);
+        }
+    }
+    
+    return faces;
+}
+
 
 
 

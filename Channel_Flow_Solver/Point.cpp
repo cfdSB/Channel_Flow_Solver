@@ -15,7 +15,7 @@ Point::~Point() {
 
 }
 
-double* Point::getCoordinates() {
+const double* Point::getCoordinates() const {
     return coordinates;
 }
 

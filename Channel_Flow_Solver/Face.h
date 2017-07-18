@@ -32,14 +32,16 @@ private:
 public:
     Face(Point* centroid, double length, double width);
     ~Face();
-    Point* getCentroid();
-    double getLength();
-    double getWidth();
-    FvCell* getCell1();
-    FvCell* getCell2();
+    const Point* getCentroid() const;
+    double getLength() const;
+    double getWidth() const;
+    const FvCell* getCell1() const;
+    const FvCell* getCell2() const;
     void setCell1(FvCell* cell1);
     void setCell2(FvCell* cell2);
     std::string toString() override;
+    const FvCell* getConnectingCell(FvCell* cell) const;
+    double getArea() const;
 
     
 };

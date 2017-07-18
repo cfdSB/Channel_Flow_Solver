@@ -23,18 +23,20 @@
 class Face;
 class FvCell: public Object{
 private:
+    long cellID;
     Point* centroid;    //cell centroid
     double dx, dy, dz;  //cell dimensions
     Face* faces[6] ;  //to hold pointers to all 6 faces of a cell in order: x-, x+, y-, y+ z-, z+;
+    static long idCounter;  //holds latest id number
     
 public:
     FvCell(Point* centroid, double dx, double dy, double dz);
     ~FvCell();
-    Point* getCentroid();
-    double getDx();
-    double getDy();
-    double getDz();
-    
+    const Point* getCentroid() const;
+    double getDx() const;
+    double getDy() const;
+    double getDz() const;
+    long getID() const;
     void setFaces(std::vector<Face*>& faces);
     Face** getFaces();
     std::string toString() override;

@@ -17,11 +17,14 @@ MeshBuilder::~MeshBuilder() {
 
 void MeshBuilder::buildMesh(double xMin, double xMax, double yMin, double yMax, double zMin, double zMax, int xCells, int yCells, int zCells){    
     
+    domain_xMin = xMin; domain_xMax = xMax; domain_yMin = yMin; domain_yMax = yMax; domain_zMin = zMin; domain_zMax = zMax;
+    this->xCells = xCells; this->yCells = yCells; this->zCells = zCells;
+    
     double dx = (xMax - xMin)/xCells;
     double dy = (yMax - yMin)/yCells;
     double dz = (zMax - zMin)/zCells;
     
-    double currentX = 0.0;
+    double currentX = xMin;
     for(int i =0; i< xCells; i++){
         
         if(i==0){
@@ -29,7 +32,7 @@ void MeshBuilder::buildMesh(double xMin, double xMax, double yMin, double yMax, 
         }else{
             currentX = currentX + dx;
         }
-        double currentY = 0.0;
+        double currentY = yMin;
         for(int j = 0; j< yCells; j++){
             
             if (j == 0) {
@@ -38,7 +41,7 @@ void MeshBuilder::buildMesh(double xMin, double xMax, double yMin, double yMax, 
                 currentY = currentY + dy;
             }
 
-            double currentZ = 0.0;
+            double currentZ = zMin;
             for (int k = 0; k < zCells; k++) {
                 
                 if (k == 0) {
@@ -63,7 +66,7 @@ void MeshBuilder::buildMesh(double xMin, double xMax, double yMin, double yMax, 
 
 void MeshBuilder::printCell(FvCell* cell){
     std::cout<<"-----------------"<<std::endl;
-    double* centroid = cell->getCentroid()->getCoordinates();
+    const double* centroid = cell->getCentroid()->getCoordinates();
     std::cout<<centroid[0]<<","<<centroid[1]<<","<<centroid[2]<<","<<cell->getDx()<<","<<cell->getDy()<<","<<cell->getDz()<<std::endl;
     
     //print faces
@@ -74,14 +77,14 @@ void MeshBuilder::printCell(FvCell* cell){
 }
 
 void MeshBuilder::printFace(Face* face) {
-    double* centroidF = face->getCentroid()->getCoordinates();
+    const double* centroidF = face->getCentroid()->getCoordinates();
     std::cout << centroidF[0] << "," << centroidF[1] << "," << centroidF[2] << "," << face->getLength() << "," << face->getWidth() << std::endl;
 }
 
 
 std::vector<Face*> MeshBuilder:: buildFaces(FvCell* cell){
     std::vector<Face*> faces;
-    double* cellCentroid = cell->getCentroid()->getCoordinates();
+    const double* cellCentroid = cell->getCentroid()->getCoordinates();
     //x- face
     double xm_x = cellCentroid[0] - cell->getDx()/2.0;
     double xm_y = cellCentroid[1];
@@ -140,7 +143,7 @@ std::vector<Face*> MeshBuilder:: buildFaces(FvCell* cell){
     //z+ face
     double zp_x = cellCentroid[0];
     double zp_y = cellCentroid[1];
-    double zp_z = cellCentroid[2] + cell->getDy()/2.0;
+    double zp_z = cellCentroid[2] + cell->getDz()/2.0;
     
     std::unique_ptr<Point> tmpPointZp(new Point(zp_x, zp_y, zp_z));
     std::unique_ptr<Face> tmpFaceZp (new Face(tmpPointZp.get(), cell->getDx(), cell->getDy())); 
@@ -185,6 +188,16 @@ void MeshBuilder::printMeshReport() {
     std::cout<<"Cell Count: "<< volumeMesh->getCellCount()<<std::endl;
     std::cout<<"Face Count: "<< volumeMesh->getFaceCount()<<std::endl;
     std::cout<<"Point Count: "<< volumeMesh->getPointCount()<< std::endl;
+    std::cout<<std::endl;
+    std::cout<<"Expected Cell Count: " << xCells*yCells*zCells<< std::endl;
+    long xFaces = yCells*zCells*(xCells + 1);
+    long yFaces = zCells*xCells*(yCells + 1);
+    long zFaces = xCells*yCells*(zCells + 1);
+    std::cout<<"Expected Face Count: " << xFaces+yFaces+zFaces <<  std::endl;
+}
+
+VolumeMesh* MeshBuilder::getVolumeMesh() {
+    return volumeMesh.get();
 }
 
    

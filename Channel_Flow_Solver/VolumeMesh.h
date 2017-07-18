@@ -24,20 +24,25 @@ public:
     VolumeMesh();
     VolumeMesh(const VolumeMesh& orig);
     virtual ~VolumeMesh();
-    void addPoint(Point* point);
-    void addFace(Face* face);
-    void addCell(FvCell* cell);
     long getCellCount();
     long getFaceCount();
     long getPointCount();
     std::vector<FvCell*>* getCells();
     std::vector<Face*>* getFaces();
     Face* findFace(Face* faceToCompare, double tolerance);
+    std::vector<Face*> findFaces(std::string plane, double value, double tolerance);
     void printCells();
+    
+    friend class MeshBuilder;
+    
 private:
     std::vector<Point*>* allPoints;
     std::vector<Face*>* allFaces;
     std::vector<FvCell*>* allCells;
+    
+    void addPoint(Point* point);
+    void addFace(Face* face);
+    void addCell(FvCell* cell);
 };
 
 #endif /* VOLUMEMESH_H */

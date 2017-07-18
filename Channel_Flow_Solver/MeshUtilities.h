@@ -22,7 +22,7 @@ public:
     MeshUtilities();
     MeshUtilities(const MeshUtilities& orig);
     virtual ~MeshUtilities();
-    static double findDistance(Point& p1, Point& p2);
+    static double findDistance(const Point& p1, const Point& p2);
 private:
 
 };
