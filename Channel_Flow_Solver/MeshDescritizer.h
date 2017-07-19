@@ -28,7 +28,7 @@ class VolumeMesh;   //forward declaration
 class MeshDescritizer {
     
 public:
-    MeshDescritizer(VolumeMesh* mesh);
+    MeshDescritizer(VolumeMesh* mesh, const PhysicsContinuum* pc);
     MeshDescritizer(const MeshDescritizer& orig);
     virtual ~MeshDescritizer();
     void computeDiscretizationCoefficients();
@@ -39,6 +39,7 @@ public:
     Matrix* buildMatrix();
 private:
     VolumeMesh* mesh;
+    const PhysicsContinuum* physicsContinuum;
     std::map<const FvCell*, CellDescritization*>* allDescritizations;
     void generateDescritizationCoefficients(FvCell* cell);
     Matrix* matrix;

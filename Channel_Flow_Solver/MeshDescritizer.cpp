@@ -16,7 +16,8 @@
 #include "VolumeMesh.h"
 #include "BoundaryCondition.h"
 
-MeshDescritizer::MeshDescritizer(VolumeMesh* mesh):mesh(mesh), matrix(NULL) {
+MeshDescritizer::MeshDescritizer(VolumeMesh* mesh, const PhysicsContinuum* pc):mesh(mesh), matrix(NULL),
+ physicsContinuum(pc){
     allDescritizations = new std::map<const FvCell*,CellDescritization*>();
 }
 
@@ -64,7 +65,8 @@ void MeshDescritizer::generateDescritizationCoefficients(FvCell* cell) {
             const Point* cellCentroid = cell->getCentroid();
             double distance = MeshUtilities::findDistance(*faceCentroid, *cellCentroid);
             double faceArea = face->getArea();
-            double coeff = faceArea/distance;
+            double diffusionCoefficient = physicsContinuum->getDiffusionCoefficient();
+            double coeff = faceArea/distance*diffusionCoefficient;
             cd->addSuComponent(face, coeff);
             cd->addSpComponent(face, -1.0*coeff);
         }else{
@@ -73,7 +75,8 @@ void MeshDescritizer::generateDescritizationCoefficients(FvCell* cell) {
             const Point* cellCentroid = cell->getCentroid();
             double distance = MeshUtilities::findDistance(*connectingCellCentroid, *cellCentroid);
             double faceArea = face->getArea();
-            double coeff = faceArea/distance;
+            double diffusionCoefficient = physicsContinuum->getDiffusionCoefficient();
+            double coeff = faceArea/distance*diffusionCoefficient;
             cd->addCoefficient(connectingCell, coeff);
         }
     }
