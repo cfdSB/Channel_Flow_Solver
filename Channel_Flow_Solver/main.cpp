@@ -42,8 +42,15 @@ int main(int argc, char** argv) {
     mesher.buildMesh(xMin, xMax, yMin, yMax, zMin, zMax, xCells, yCells, zCells);
     mesher.printMeshReport();
     
+    //define material
+    PhysicsContinuum pc;
+    //pc.setThermalConductivity(10);
+    pc.setDiffusionCoefficient(10);
+    
     VolumeMesh* mesh = mesher.getVolumeMesh();
-    std::unique_ptr<MeshDescritizer> discretizer(new MeshDescritizer(mesh));
+    std::unique_ptr<MeshDescritizer> discretizer(new MeshDescritizer(mesh, &pc));
+    discretizer->setDifferencingScheme(MeshDescritizer::DifferencingScheme::CENTRAL);
+    discretizer->setsimulationType(MeshDescritizer::SimulationType::DIFFUSION);
     discretizer->computeDiscretizationCoefficients();
     discretizer->printCoefficients();
     
@@ -58,11 +65,7 @@ int main(int argc, char** argv) {
     bcManager->createBoundaryCondition("y", 0.3, 1.0e-6, BoundaryCondition::BcType::ADIABATIC,0.0);
     bcManager->createBoundaryCondition("z", 0.3, 1.0e-6, BoundaryCondition::BcType::ADIABATIC,0.0);
     bcManager->printBoundaryConditionsReport();
-
-    PhysicsContinuum pc;
-    pc.setThermalConductivity(10);
-    
-    discretizer->updateCoefficients(&pc); //needs to be done before correcting coefficients with BCs.
+  
     discretizer->updateCoefficients(bcManager->getBoundaryConditions());
     discretizer->printCoefficients();
     
