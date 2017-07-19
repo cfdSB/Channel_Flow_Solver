@@ -20,11 +20,17 @@ public:
     PhysicsContinuum(const PhysicsContinuum& orig);
     virtual ~PhysicsContinuum();
     
-    double getThermalConductivity();
+    double getThermalConductivity() const;
     double setThermalConductivity(double conductivity);
+    double getDiffusionCoefficient() const;
+    void setDiffusionCoefficient(double value);
+    double getDensity() const;
+    void setDensity(double value);
     
 private:
     double thermalConductivity;
+    double diffusionCoefficient;
+    double density;
 };
 
 #endif /* PHYSICSCONTINUUM_H */

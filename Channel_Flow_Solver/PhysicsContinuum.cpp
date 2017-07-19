@@ -30,3 +30,20 @@ double PhysicsContinuum::setThermalConductivity(double conductivity) {
     thermalConductivity = conductivity;
 }
 
+double PhysicsContinuum::getDensity() const {
+    return density;
+}
+
+void PhysicsContinuum::setDensity(double value) {
+    this->density = value;
+}
+
+double PhysicsContinuum::getDiffusionCoefficient() const {
+    return diffusionCoefficient;
+}
+
+void PhysicsContinuum::setDiffusionCoefficient(double value) {
+    this->diffusionCoefficient = value;
+}
+
+
