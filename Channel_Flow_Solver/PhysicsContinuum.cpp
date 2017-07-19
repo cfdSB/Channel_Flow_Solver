@@ -22,7 +22,7 @@ PhysicsContinuum::PhysicsContinuum(const PhysicsContinuum& orig) {
 PhysicsContinuum::~PhysicsContinuum() {
 }
 
-double PhysicsContinuum::getThermalConductivity() {
+double PhysicsContinuum::getThermalConductivity() const {
     return thermalConductivity;
 }
 
