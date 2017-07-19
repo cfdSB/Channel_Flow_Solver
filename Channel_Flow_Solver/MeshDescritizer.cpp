@@ -24,6 +24,28 @@ MeshDescritizer::MeshDescritizer(VolumeMesh* mesh, const PhysicsContinuum* pc):m
 MeshDescritizer::MeshDescritizer(const MeshDescritizer& orig) {
 }
 
+MeshDescritizer::SimulationType MeshDescritizer::getsimulationType() const {
+    return simulationType;
+}
+
+void MeshDescritizer::setsimulationType(SimulationType type) {
+    this->simulationType = type;
+    if(type == SimulationType::DIFFUSION){
+        diffusionEnabled = true;
+    }else if (type == SimulationType::CONVECTION_DIFFUSION){
+        convectionEnabled = true;
+        diffusionEnabled = true;
+    }
+}
+
+MeshDescritizer::DifferencingScheme MeshDescritizer::getDifferencingScheme() const {
+    return differencingScheme;
+}
+
+void MeshDescritizer::setDifferencingScheme(DifferencingScheme differencingScheme) {
+    this->differencingScheme = differencingScheme;
+}
+
 MeshDescritizer::~MeshDescritizer() {
     std::map<const FvCell*, CellDescritization*>::iterator it = allDescritizations->begin();
     while(it!=allDescritizations->end()){
@@ -132,13 +154,13 @@ void MeshDescritizer::updateCoefficients(std::vector<BoundaryCondition*> *condit
 }
 
 
-void MeshDescritizer::updateCoefficients(PhysicsContinuum* pc){
-    std::map<const FvCell*, CellDescritization*>::iterator it;
-    for(it=allDescritizations->begin(); it!= allDescritizations->end(); it++){
-        CellDescritization* cds = it->second;
-        cds->scaleAllComponentsAndCoefficients(pc->getThermalConductivity());
-    }
-}
+//void MeshDescritizer::updateCoefficients(PhysicsContinuum* pc){
+//    std::map<const FvCell*, CellDescritization*>::iterator it;
+//    for(it=allDescritizations->begin(); it!= allDescritizations->end(); it++){
+//        CellDescritization* cds = it->second;
+//        cds->scaleAllComponentsAndCoefficients(pc->getThermalConductivity());
+//    }
+//}
 
 Matrix* MeshDescritizer::buildMatrix() {
     
