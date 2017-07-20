@@ -105,7 +105,8 @@ void MeshDescritizer::populateDiffusionCoefficients(FvCell* cell) {
             double distance = MeshUtilities::findDistance(*connectingCellCentroid, *cellCentroid);
             double faceArea = face->getArea();
             double diffusionCoefficient = physicsContinuum->getDiffusionCoefficient();
-            double coeff = faceArea / distance*diffusionCoefficient;
+            //coefficients which conform to Ap*Phi_p + Ae*Phi_e + Aw*Phi_w = Su + volumetric source term
+            double coeff = faceArea / distance*diffusionCoefficient*-1.0;
             cd->addDiffusionCoefficient(connectingCell, coeff);
         }
     }
@@ -213,7 +214,7 @@ Matrix* MeshDescritizer::buildMatrix() {
             
             cellCoefficient = cellCoefficient + value;  //calcuation of ap
             
-            value = value* -1.0;    // matrix rearrangement needs this negation.
+            //value = value* -1.0;    // matrix rearrangement needs this negation.
             matrix->setCoefficient(rowNumber, columnNumber, value);
         }
         
@@ -225,7 +226,8 @@ Matrix* MeshDescritizer::buildMatrix() {
             double value = it->second;
             spCoefficient = spCoefficient + value;
         }
-        cellCoefficient = cellCoefficient - spCoefficient; //sum of all neighbor cell coeffs - sp coefficients
+        //Ap definition Ap = -(Ae + Aw) - Sp
+        cellCoefficient = -1.0*cellCoefficient - spCoefficient; //sum of all neighbor cell coeffs - sp coefficients
         long rowNumber = i;
         long columnNumber = i;
         matrix->setCoefficient(rowNumber, columnNumber, cellCoefficient);
