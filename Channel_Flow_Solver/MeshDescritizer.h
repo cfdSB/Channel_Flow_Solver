@@ -50,13 +50,15 @@ public:
 private:
     VolumeMesh* mesh;
     const PhysicsContinuum* physicsContinuum;
-    std::map<const FvCell*, CellDescritization*>* allDescritizations;
-    void generateDescritizationCoefficients(FvCell* cell);
+    std::map<const FvCell*, CellDescritization*>* allDescritizations;    
     Matrix* matrix;
     
     SimulationType simulationType;
     ConvectionDifferencingScheme differencingScheme;
     bool diffusionEnabled, convectionEnabled;
+    
+    void generateDescritizationCoefficients(FvCell* cell);
+    void populateDiffusionCoefficients(FvCell* cell);
     
 };
 

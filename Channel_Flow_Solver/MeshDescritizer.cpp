@@ -74,38 +74,43 @@ void MeshDescritizer::generateDescritizationCoefficients(FvCell* cell) {
     //create a discretization object
     CellDescritization* cd = new CellDescritization(cell);
     allDescritizations->insert(std::make_pair(cell, cd));
-    
+
+    populateDiffusionCoefficients(cell);
+}
+
+void MeshDescritizer::populateDiffusionCoefficients(FvCell* cell) {
+
+    CellDescritization* cd = allDescritizations->at(cell);
     //grab all faces and compute coefficients
     Face** faces = cell->getFaces();
-    for(int i=0; i<6; i++){
+    for (int i = 0; i < 6; i++) {
+        
         Face* face = faces[i];
         const FvCell* connectingCell = face->getConnectingCell(cell);
-        
-        if(connectingCell == NULL){
+
+        if (connectingCell == NULL) {
             //boundary cell
             const Point* faceCentroid = face->getCentroid();
             const Point* cellCentroid = cell->getCentroid();
             double distance = MeshUtilities::findDistance(*faceCentroid, *cellCentroid);
             double faceArea = face->getArea();
             double diffusionCoefficient = physicsContinuum->getDiffusionCoefficient();
-            double coeff = faceArea/distance*diffusionCoefficient;
-            cd->addSuComponent(face, coeff);
-            cd->addSpComponent(face, -1.0*coeff);
-        }else{
+            double coeff = faceArea / distance*diffusionCoefficient;
+            cd->addDiffusionSuComponent(face, coeff);
+            cd->addDiffusionSpComponent(face, -1.0 * coeff);
+        } else {
             //regular cell
             const Point* connectingCellCentroid = connectingCell->getCentroid();
             const Point* cellCentroid = cell->getCentroid();
             double distance = MeshUtilities::findDistance(*connectingCellCentroid, *cellCentroid);
             double faceArea = face->getArea();
             double diffusionCoefficient = physicsContinuum->getDiffusionCoefficient();
-            double coeff = faceArea/distance*diffusionCoefficient;
-            cd->addCoefficient(connectingCell, coeff);
+            double coeff = faceArea / distance*diffusionCoefficient;
+            cd->addDiffusionCoefficient(connectingCell, coeff);
         }
     }
-    //add coefficient for the cell itself
-    double sumSpCoeff = 0;
-    
 }
+
 
 void MeshDescritizer::printCoefficients() {
     std::map<const FvCell*, CellDescritization*>::iterator it = allDescritizations->begin();
@@ -139,15 +144,15 @@ void MeshDescritizer::updateCoefficients(std::vector<BoundaryCondition*> *condit
             //adjust su or sp component of the particular face
             CellDescritization* des = allDescritizations->find(cell)->second;
             if(bc->getType() == BoundaryCondition::FIXED_VALUE){       
-                des->scaleSuComponent(face, bc->getValue());
+                des->scaleDiffusionSuComponent(face, bc->getValue());
             }else if(bc->getType() == BoundaryCondition::ADIABATIC){
-                des->scaleSuComponent(face, 0.0);
-                des->scaleSpComponent(face, 0.0);
+                des->scaleDiffusionSuComponent(face, 0.0);
+                des->scaleDiffusionSpComponent(face, 0.0);
             }else if(bc->getType() == BoundaryCondition::FIXED_FLUX){
-                des->scaleSuComponent(face, 0.0);
+                des->scaleDiffusionSuComponent(face, 0.0);
                 double appendValue = bc->getValue()*face->getArea();
-                des->appendSuComponent(face, appendValue);
-                des->scaleSpComponent(face, 0.0);
+                des->appendDiffusionSuComponent(face, appendValue);
+                des->scaleDiffusionSpComponent(face, 0.0);
             }
         }
     }
@@ -194,7 +199,7 @@ Matrix* MeshDescritizer::buildMatrix() {
     for (cellP_desc_map it = allDescritizations->begin(); it != allDescritizations->end(); it++) {
         
         CellDescritization* cd = it->second;
-        std::map<const FvCell*, double>* coeffs = cd->getCoefficients();
+        std::map<const FvCell*, double>* coeffs = cd->getDiffusionCoefficients();
 
         //loop through each neighbor cell and update matrix
         typedef std::map<const FvCell*, double>::iterator cellP_double_map;
@@ -213,7 +218,7 @@ Matrix* MeshDescritizer::buildMatrix() {
         }
         
         //update the coefficient of the cell itself
-        std::map<Face*, double>* spComps = cd->getSpComponents();
+        std::map<Face*, double>* spComps = cd->getDiffusionSpComponents();
         typedef std::map<Face*, double>::iterator faceP_double_map;
         double spCoefficient = 0; //the coefficient of the cell itself
         for (faceP_double_map it = spComps->begin(); it != spComps->end(); it++) {
@@ -234,7 +239,7 @@ Matrix* MeshDescritizer::buildMatrix() {
         
         CellDescritization* cd = it->second;
         
-        std::map<Face*, double>* suComps = cd->getSuComponents();
+        std::map<Face*, double>* suComps = cd->getDiffusionSuComponents();
         typedef std::map<Face*, double>::iterator faceP_double_map;
         double suCoefficient = 0; //the coefficient of the cell itself
         for (faceP_double_map it = suComps->begin(); it != suComps->end(); it++) {
