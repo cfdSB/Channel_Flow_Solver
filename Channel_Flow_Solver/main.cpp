@@ -49,7 +49,7 @@ int main(int argc, char** argv) {
     
     VolumeMesh* mesh = mesher.getVolumeMesh();
     std::unique_ptr<MeshDescritizer> discretizer(new MeshDescritizer(mesh, &pc));
-    discretizer->setDifferencingScheme(MeshDescritizer::DifferencingScheme::CENTRAL);
+    discretizer->setConvectionDifferencingScheme(MeshDescritizer::ConvectionDifferencingScheme::CENTRAL);
     discretizer->setsimulationType(MeshDescritizer::SimulationType::DIFFUSION);
     discretizer->computeDiscretizationCoefficients();
     discretizer->printCoefficients();

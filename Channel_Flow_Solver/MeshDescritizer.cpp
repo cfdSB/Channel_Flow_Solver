@@ -38,11 +38,11 @@ void MeshDescritizer::setsimulationType(SimulationType type) {
     }
 }
 
-MeshDescritizer::DifferencingScheme MeshDescritizer::getDifferencingScheme() const {
+MeshDescritizer::ConvectionDifferencingScheme MeshDescritizer::getConvectionDifferencingScheme() const {
     return differencingScheme;
 }
 
-void MeshDescritizer::setDifferencingScheme(DifferencingScheme differencingScheme) {
+void MeshDescritizer::setConvectionDifferencingScheme(ConvectionDifferencingScheme differencingScheme) {
     this->differencingScheme = differencingScheme;
 }
 

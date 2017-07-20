@@ -30,7 +30,7 @@ class MeshDescritizer {
 public:
     
     enum SimulationType {DIFFUSION, CONVECTION_DIFFUSION}; 
-    enum DifferencingScheme {CENTRAL, FIRST_ORDER_UPWIND};  
+    enum ConvectionDifferencingScheme {CENTRAL, FIRST_ORDER_UPWIND};  
     
     MeshDescritizer(VolumeMesh* mesh, const PhysicsContinuum* pc);
     MeshDescritizer(const MeshDescritizer& orig);
@@ -43,8 +43,8 @@ public:
     Matrix* buildMatrix();
     SimulationType getsimulationType() const;
     void setsimulationType(SimulationType type);
-    DifferencingScheme getDifferencingScheme() const;
-    void setDifferencingScheme(DifferencingScheme differencingScheme);    
+    ConvectionDifferencingScheme getConvectionDifferencingScheme() const;
+    void setConvectionDifferencingScheme(ConvectionDifferencingScheme differencingScheme);    
     
     
 private:
@@ -55,7 +55,7 @@ private:
     Matrix* matrix;
     
     SimulationType simulationType;
-    DifferencingScheme differencingScheme;
+    ConvectionDifferencingScheme differencingScheme;
     bool diffusionEnabled, convectionEnabled;
     
 };
