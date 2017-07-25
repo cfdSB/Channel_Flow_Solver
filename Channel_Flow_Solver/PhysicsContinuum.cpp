@@ -73,7 +73,7 @@ Material* PhysicsContinuum::getMaterial() const {
 }
 
 void PhysicsContinuum::setMaterial(Material* mat) {
-    this->material = material;
+    this->material = mat;
 }
 
 
