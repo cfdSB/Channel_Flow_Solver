@@ -23,6 +23,7 @@
 #include "BoundaryConditionsManager.h"
 #include "PhysicsContinuum.h"
 #include "MatrixSolver.h"
+#include "Material.h"
 
 using namespace std;
 
@@ -43,14 +44,15 @@ int main(int argc, char** argv) {
     mesher.printMeshReport();
     
     //define material
+    Material air;
+    air.setDiffusionCoefficient(10.0);
     PhysicsContinuum pc;
-    //pc.setThermalConductivity(10);
-    pc.setDiffusionCoefficient(10);
+    pc.setMaterial(&air);
     
     VolumeMesh* mesh = mesher.getVolumeMesh();
     std::unique_ptr<MeshDescritizer> discretizer(new MeshDescritizer(mesh, &pc));
-    discretizer->setConvectionDifferencingScheme(MeshDescritizer::ConvectionDifferencingScheme::CENTRAL);
-    discretizer->setsimulationType(MeshDescritizer::SimulationType::DIFFUSION);
+//    discretizer->setConvectionDifferencingScheme(MeshDescritizer::ConvectionDifferencingScheme::CENTRAL);
+//    discretizer->setsimulationType(MeshDescritizer::SimulationType::DIFFUSION);
     discretizer->computeDiscretizationCoefficients();
     discretizer->printCoefficients();
     
