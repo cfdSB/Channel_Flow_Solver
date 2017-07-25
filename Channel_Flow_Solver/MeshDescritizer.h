@@ -29,9 +29,7 @@ class MeshDescritizer {
     
 public:
     
-    enum SimulationType {DIFFUSION, CONVECTION_DIFFUSION}; 
-    enum ConvectionDifferencingScheme {CENTRAL, FIRST_ORDER_UPWIND};  
-    
+
     MeshDescritizer(VolumeMesh* mesh, const PhysicsContinuum* pc);
     MeshDescritizer(const MeshDescritizer& orig);
     virtual ~MeshDescritizer();
@@ -41,11 +39,7 @@ public:
     void updateCoefficients(std::vector<BoundaryCondition*> *conditions);
     //void updateCoefficients(PhysicsContinuum* pc);
     Matrix* buildMatrix();
-    SimulationType getsimulationType() const;
-    void setsimulationType(SimulationType type);
-    ConvectionDifferencingScheme getConvectionDifferencingScheme() const;
-    void setConvectionDifferencingScheme(ConvectionDifferencingScheme differencingScheme);    
-    
+
     
 private:
     VolumeMesh* mesh;
@@ -53,10 +47,7 @@ private:
     std::map<const FvCell*, CellDescritization*>* allDescritizations;    
     Matrix* matrix;
     
-    SimulationType simulationType;
-    ConvectionDifferencingScheme differencingScheme;
-    bool diffusionEnabled, convectionEnabled;
-    
+
     void generateDescritizationCoefficients(FvCell* cell);
     void populateDiffusionCoefficients(FvCell* cell);
     

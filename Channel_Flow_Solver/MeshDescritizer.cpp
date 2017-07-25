@@ -24,27 +24,6 @@ MeshDescritizer::MeshDescritizer(VolumeMesh* mesh, const PhysicsContinuum* pc):m
 MeshDescritizer::MeshDescritizer(const MeshDescritizer& orig) {
 }
 
-MeshDescritizer::SimulationType MeshDescritizer::getsimulationType() const {
-    return simulationType;
-}
-
-void MeshDescritizer::setsimulationType(SimulationType type) {
-    this->simulationType = type;
-    if(type == SimulationType::DIFFUSION){
-        diffusionEnabled = true;
-    }else if (type == SimulationType::CONVECTION_DIFFUSION){
-        convectionEnabled = true;
-        diffusionEnabled = true;
-    }
-}
-
-MeshDescritizer::ConvectionDifferencingScheme MeshDescritizer::getConvectionDifferencingScheme() const {
-    return differencingScheme;
-}
-
-void MeshDescritizer::setConvectionDifferencingScheme(ConvectionDifferencingScheme differencingScheme) {
-    this->differencingScheme = differencingScheme;
-}
 
 MeshDescritizer::~MeshDescritizer() {
     std::map<const FvCell*, CellDescritization*>::iterator it = allDescritizations->begin();
