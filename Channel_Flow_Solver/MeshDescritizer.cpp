@@ -73,7 +73,7 @@ void MeshDescritizer::populateDiffusionCoefficients(FvCell* cell) {
             const Point* cellCentroid = cell->getCentroid();
             double distance = MeshUtilities::findDistance(*faceCentroid, *cellCentroid);
             double faceArea = face->getArea();
-            double diffusionCoefficient = physicsContinuum->getDiffusionCoefficient();
+            double diffusionCoefficient = physicsContinuum->getMaterial()->getDiffusionCoefficient();
             double coeff = faceArea / distance*diffusionCoefficient;
             cd->addDiffusionSuComponent(face, coeff);
             cd->addDiffusionSpComponent(face, -1.0 * coeff);
@@ -83,7 +83,7 @@ void MeshDescritizer::populateDiffusionCoefficients(FvCell* cell) {
             const Point* cellCentroid = cell->getCentroid();
             double distance = MeshUtilities::findDistance(*connectingCellCentroid, *cellCentroid);
             double faceArea = face->getArea();
-            double diffusionCoefficient = physicsContinuum->getDiffusionCoefficient();
+            double diffusionCoefficient = physicsContinuum->getMaterial()->getDiffusionCoefficient();
             //coefficients which conform to Ap*Phi_p + Ae*Phi_e + Aw*Phi_w = Su + volumetric source term
             double coeff = faceArea / distance*diffusionCoefficient*-1.0;
             cd->addDiffusionCoefficient(connectingCell, coeff);
