@@ -10,6 +10,7 @@ long FvCell::idCounter = 0;
 FvCell::FvCell(Point* centroid, double dx, double dy, double dz): centroid(centroid), dx(dx),
         dy(dy), dz(dz){
     cellID = idCounter++;
+    solutionFields = new std::map<std::string, double*>();
 }
 
 const Point* FvCell::getCentroid() const {
@@ -30,6 +31,7 @@ double FvCell::getDz() const{
 
 FvCell::~FvCell() {
     centroid = 0;
+    delete solutionFields;
 }
 
 void FvCell::setFaces(std::vector<Face*>& faces) {
@@ -45,6 +47,15 @@ Face** FvCell::getFaces() {
 long FvCell::getID() const {
     return cellID;
 }
+
+void FvCell::addSolutionField(std::string fieldName, double* value) {
+    solutionFields->insert(std::make_pair(fieldName, value));    
+}
+
+void FvCell::removeSolutionField(std::string fieldName) {
+    solutionFields->erase(fieldName);
+}
+
 
 std::string FvCell::toString() {
     std::ostringstream output;
