@@ -32,7 +32,8 @@ public:
     Face* findFace(Face* faceToCompare, double tolerance);
     std::vector<Face*> findFaces(std::string plane, double value, double tolerance);
     void printCells();
-    
+    void addSolutionFieldToMesh(std::string fieldName, std::vector<double>* values);
+    void removeSolutionFieldFromMesh(std::string fieldName);
     friend class MeshBuilder;
     
 private:
