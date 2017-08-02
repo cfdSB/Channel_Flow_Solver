@@ -56,6 +56,10 @@ void FvCell::removeSolutionField(std::string fieldName) {
     solutionFields->erase(fieldName);
 }
 
+double* FvCell::getSolutionField(std::string fieldName) const{
+    return solutionFields->at(fieldName);
+}
+
 
 std::string FvCell::toString() {
     std::ostringstream output;

@@ -44,6 +44,7 @@ public:
     std::string toString() override;
     void addSolutionField(std::string fieldName, double* val);
     void removeSolutionField(std::string fieldName);
+    double* getSolutionField(std::string fieldName) const;
 
 };
 
