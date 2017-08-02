@@ -19,6 +19,11 @@ CellDescritization::CellDescritization(FvCell* cell):cell(cell) {
     diffusionCoefficients = new std::map<const FvCell*, double>();
     diffusionSuComponents = new std::map<Face*, double> ();
     diffusionSpComponents = new std::map<Face*, double> ();
+    
+    convectionCoefficients = new std::map<const FvCell*, double>();
+    convectionSuComponents = new std::map<Face*, double> ();
+    convectionSpComponents = new std::map<Face*, double> ();
+    massBalanceCoefficients = new std::map<const FvCell*, double>();
 }
 
 CellDescritization::CellDescritization(const CellDescritization& orig) {
@@ -28,6 +33,11 @@ CellDescritization::~CellDescritization() {
     delete diffusionCoefficients;
     delete diffusionSuComponents;
     delete diffusionSpComponents;
+    
+    delete convectionCoefficients;
+    delete convectionSuComponents;
+    delete convectionSpComponents;
+    delete massBalanceCoefficients;
 }
 
 std::map<const FvCell*, double>* CellDescritization::getDiffusionCoefficients() {
@@ -53,6 +63,23 @@ void CellDescritization::addDiffusionSuComponent(Face* face, double value) {
 std::map<Face*, double>* CellDescritization::getDiffusionSuComponents() {
     return diffusionSuComponents;
 }
+
+void CellDescritization::addConvectionCoefficient(const FvCell* cell, double coefficient) {
+    convectionCoefficients->insert(std::make_pair(cell, coefficient));
+}
+
+void CellDescritization::addConvectionMassBalanceComponent(const FvCell* cell, double component) {
+    massBalanceCoefficients->insert(std::make_pair(cell, component));
+}
+
+void CellDescritization::addConvectionSpComponent(Face* face, double value) {
+    convectionSpComponents->insert(std::make_pair(face, value));
+}
+
+void CellDescritization::addConvectionSuComponent(Face* face, double value) {
+    convectionSuComponents->insert(std::make_pair(face, value));
+}
+
 
 std::string CellDescritization::toString() {
     std::ostringstream output;

@@ -36,6 +36,12 @@ public:
     void appendDiffusionSuComponent(Face* face, double appendValue);
     void scaleAllDiffusionComponentsAndCoefficients(double scaleFactor);
     std::map<Face*, double>* getDiffusionSpComponents();
+    
+    void addConvectionCoefficient(const FvCell* cell, double coefficient);
+    void addConvectionSuComponent(Face* face, double value);
+    void addConvectionSpComponent(Face* face, double value);
+    void addConvectionMassBalanceComponent(const FvCell* cell, double component);
+    
     FvCell* getCell();
     std::string toString() override;
 
@@ -46,6 +52,11 @@ private:
     std::map<Face*, double> *diffusionSuComponents; //constant part of source term linearization    
     std::map<Face*, double> *diffusionSpComponents;  //variable dependent part of source term linearization and/or artifact
                                            //of the the cell being a boundary cell
+    
+    std::map<const FvCell*, double> *convectionCoefficients;
+    std::map<Face*, double> *convectionSuComponents;
+    std::map<Face*, double> *convectionSpComponents;
+    std::map<const FvCell*, double> *massBalanceCoefficients;
 };
 
 #endif /* CELLDESCRITIZATION_H */
