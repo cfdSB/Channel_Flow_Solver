@@ -55,6 +55,96 @@ void MeshDescritizer::generateDescritizationCoefficients(FvCell* cell) {
     allDescritizations->insert(std::make_pair(cell, cd));
 
     populateDiffusionCoefficients(cell);
+    populateConvectionCoefficients(cell);
+}
+
+void MeshDescritizer::populateConvectionCoefficients(FvCell* cell) {
+    CellDescritization* cd = allDescritizations->at(cell);
+    //grab all faces and compute coefficients
+    Face** faces = cell->getFaces();
+    
+    Face* xmFace = faces[0];
+    Face* xpFace = faces[1];
+    Face* ymFace = faces[2];
+    Face* ypFace = faces[3];
+    Face* zmFace = faces[4];
+    Face* zpFace = faces[5];
+    
+    double density = physicsContinuum->getDensity();
+    
+    //x- direction convection flux
+    const FvCell* xmCell = xmFace->getConnectingCell(cell);
+    if(xmCell==NULL){
+        cd->addConvectionSuComponent(xmFace, density*xmFace->getArea());
+    }else{
+        double xmFaceVel = (*(xmCell->getSolutionField("U_Velocity")) + *(cell->getSolutionField("U_Velocity")))/2.0;
+        double faceFlux = xmFaceVel*density*xmFace->getArea();
+        double xmConvFlux = -1.0*faceFlux/2.0;
+        cd->addConvectionCoefficient(xmCell, xmConvFlux);
+        cd->addConvectionMassBalanceComponent(xmCell,-1.0*faceFlux);
+    }
+    
+    //x+ direction convection flux
+    const FvCell* xpCell = xpFace->getConnectingCell(cell);
+    if(xpCell == NULL){
+        cd->addConvectionSuComponent(xpFace,-1.0*density*xpFace->getArea());
+    }else{
+       double xpFaceVel = (*(xpCell->getSolutionField("U_Velocity")) + *(cell->getSolutionField("U_Velocity")))/2.0; 
+       double faceFlux = xpFaceVel*density*xpFace->getArea();
+       double xpConvFlux = faceFlux/2.0;
+       cd->addConvectionCoefficient(xpCell, xpConvFlux);
+       cd->addConvectionMassBalanceComponent(xpCell,faceFlux);
+    }
+    
+    //y- direction convective flux
+    const FvCell* ymCell = ymFace->getConnectingCell(cell);
+    
+    if(ymCell == NULL){
+        cd->addConvectionSuComponent(ymFace, density*ymFace->getArea());
+    }else{
+        double ymFaceVel = (*(ymCell->getSolutionField("V_Velocity")) + *(cell->getSolutionField("V_Velocity")))/2.0;
+        double faceFlux = ymFaceVel*density*ymFace->getArea();
+        double ymConvFlux = -1.0*faceFlux/2.0;
+        cd->addConvectionCoefficient(ymCell, ymConvFlux);
+        cd->addConvectionMassBalanceComponent(ymCell,-1.0*faceFlux);
+    }
+    
+    //y+ direction convective flux
+    const FvCell* ypCell = ypFace->getConnectingCell(cell);
+    if(ypCell == NULL){
+        cd->addConvectionSuComponent(ypFace,-1.0*density*ypFace->getArea());
+    } else {
+        double ypFaceVel = (*(ypCell->getSolutionField("V_Velocity")) + *(cell->getSolutionField("V_Velocity"))) / 2.0;
+        double faceFlux = ypFaceVel * density * ypFace->getArea();
+        double ypConvFlux = faceFlux / 2.0;
+        cd->addConvectionCoefficient(ypCell, ypConvFlux);
+        cd->addConvectionMassBalanceComponent(ypCell, faceFlux);
+    }
+
+    //z- direction convective flux
+    const FvCell* zmCell = zmFace->getConnectingCell(cell);
+    if (zmCell == NULL) {
+        cd->addConvectionSuComponent(zmFace, density * zmFace->getArea());
+    } else {
+        double zmFaceVel = (*(zmCell->getSolutionField("W_Velocity")) + *(cell->getSolutionField("W_Velocity")))/2.0;
+        double faceFlux = zmFaceVel*density*zmFace->getArea();
+        double zmConvFlux = -1.0*faceFlux/2.0;
+        cd->addConvectionCoefficient(zmCell, zmConvFlux);
+        cd->addConvectionMassBalanceComponent(zmCell,-1.0*faceFlux);
+    }
+    
+    //z+ direction convective flux
+    const FvCell* zpCell = zpFace->getConnectingCell(cell);
+    if(zpCell == NULL){
+        cd->addConvectionSuComponent(ypFace,-1.0*density*ypFace->getArea());
+    }else{
+        double zpFaceVel = (*(zpCell->getSolutionField("W_Velocity")) + *(cell->getSolutionField("W_Velocity"))) / 2.0;
+        double faceFlux = zpFaceVel * density * zpFace->getArea();
+        double zpConvFlux = faceFlux / 2.0;
+        cd->addConvectionCoefficient(zpCell, zpConvFlux);
+        cd->addConvectionMassBalanceComponent(zpCell, faceFlux);        
+    }
+        
 }
 
 void MeshDescritizer::populateDiffusionCoefficients(FvCell* cell) {

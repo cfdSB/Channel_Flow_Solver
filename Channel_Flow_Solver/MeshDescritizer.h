@@ -50,6 +50,7 @@ private:
 
     void generateDescritizationCoefficients(FvCell* cell);
     void populateDiffusionCoefficients(FvCell* cell);
+    void populateConvectionCoefficients(FvCell* cell);
     
 };
 
