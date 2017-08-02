@@ -136,7 +136,7 @@ void MeshDescritizer::populateConvectionCoefficients(FvCell* cell) {
     //z+ direction convective flux
     const FvCell* zpCell = zpFace->getConnectingCell(cell);
     if(zpCell == NULL){
-        cd->addConvectionSuComponent(ypFace,-1.0*density*ypFace->getArea());
+        cd->addConvectionSuComponent(zpFace,-1.0*density*zpFace->getArea());
     }else{
         double zpFaceVel = (*(zpCell->getSolutionField("W_Velocity")) + *(cell->getSolutionField("W_Velocity"))) / 2.0;
         double faceFlux = zpFaceVel * density * zpFace->getArea();
