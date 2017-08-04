@@ -18,15 +18,16 @@
 #include <map>
 #include <sstream>
 #include "VolumeMesh.h"
+#include "SolutionVariable.h"
 
 class SolutionManager {
 public:
     SolutionManager(VolumeMesh *mesh);
     SolutionManager(const SolutionManager& orig);
     virtual ~SolutionManager();
-    void createSolutionVariable(std::string variableName);
+    SolutionVariable* createSolutionVariable(std::string variableName, SolutionVariable::variableType varType);
 private:
-    std::map<std::string, std::vector<double>* > *solutionVariables;
+    std::vector<SolutionVariable*> *solutionVariables;
     VolumeMesh *volumeMesh;
 };
 

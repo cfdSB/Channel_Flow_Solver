@@ -15,29 +15,28 @@
 #include "VolumeMesh.h"
 
 SolutionManager::SolutionManager(VolumeMesh *mesh): volumeMesh(mesh) {
-    solutionVariables = new std::map<std::string, std::vector<double>* >();
+    solutionVariables = new std::vector<SolutionVariable*>();
 }
 
 SolutionManager::SolutionManager(const SolutionManager& orig) {
 }
 
 SolutionManager::~SolutionManager() {
-    std::map<std::string, std::vector<double>* >::iterator it = solutionVariables->begin();
+    
+    std::vector<SolutionVariable*>::iterator it = solutionVariables->begin();
     while(it!=solutionVariables->end()){
-        std::pair<std::string, std::vector<double>* >  pair = *it;
-        std::string variableName = pair.first;
-        volumeMesh->removeSolutionFieldFromMesh(variableName);
-        std::vector<double>* cd = pair.second;
-        delete cd;
+        SolutionVariable *solVar = *it;
+        volumeMesh->removeSolutionFieldFromMesh(solVar->GetVariableName());
+        delete solVar;
         it++;
     }
     delete solutionVariables;
 }
 
-void SolutionManager::createSolutionVariable(std::string variableName) {
+SolutionVariable* SolutionManager::createSolutionVariable(std::string variableName, SolutionVariable::variableType varType) {
     long cellCount = volumeMesh->getCellCount();
-    std::vector<double>* solution = new std::vector<double>(cellCount);
-    solutionVariables->insert(std::make_pair(variableName, solution));
-    volumeMesh->addSolutionFieldToMesh(variableName, solution);
-    
+    SolutionVariable *solVar = new SolutionVariable(variableName, cellCount, varType);
+    solutionVariables->push_back(solVar);
+    volumeMesh->addSolutionFieldToMesh(variableName, solVar->GetVariableValues());
+    return solVar;
 }
