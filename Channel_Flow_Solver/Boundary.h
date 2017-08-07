@@ -27,10 +27,14 @@ public:
     Boundary(const Boundary& orig);
     virtual ~Boundary();
     void addBoundaryCondition(std::string variableName, BoundaryCondition *bc);
+    BoundaryCondition* getBoundaryCondition(std::string variableName) const;
+    std::vector<Face*>* getFaces() const;
 private:
     std::string name;
     std::vector<Face*> *faces;
     std::map<std::string, BoundaryCondition*> *boundaryConditions;
+    
+    void connectBoundaryToFaces();
 };
 
 #endif /* BOUNDARY_H */

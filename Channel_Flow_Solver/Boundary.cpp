@@ -15,6 +15,7 @@
 
 Boundary::Boundary(std::string name, std::vector<Face*> *faces):name(name), faces(faces) {
     boundaryConditions = new std::map<std::string, BoundaryCondition*>();
+    connectBoundaryToFaces();
 }
 
 Boundary::Boundary(const Boundary& orig) {
@@ -27,5 +28,19 @@ Boundary::~Boundary() {
 
 void Boundary::addBoundaryCondition(std::string variableName, BoundaryCondition* bc) {
     boundaryConditions->insert(std::make_pair(variableName, bc));
+}
+
+void Boundary::connectBoundaryToFaces() {
+    for(size_t i=0; i<faces->size(); i++){
+        faces->at(i)->setBoundary(this);
+    }
+}
+
+std::vector<Face*>* Boundary::getFaces() const {
+    return faces;
+}
+
+BoundaryCondition* Boundary::getBoundaryCondition(std::string variableName) const {
+    return boundaryConditions->at(variableName);
 }
 
