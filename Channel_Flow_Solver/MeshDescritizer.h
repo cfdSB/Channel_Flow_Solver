@@ -37,7 +37,7 @@ public:
     void computeDiscretizationCoefficients();
     void printCoefficients();
     std::map<const FvCell*, CellDescritization*>* getDescritizations();
-    void updateCoefficients(std::vector<BoundaryCondition*> *conditions);
+    //void updateCoefficients(std::vector<BoundaryCondition*> *conditions);
     //void updateCoefficients(PhysicsContinuum* pc);
     void updateCoefficientsWithBCs(std::vector<Boundary*> *boundaries);
     Matrix* buildMatrix();

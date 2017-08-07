@@ -204,35 +204,35 @@ std::map<const FvCell*, CellDescritization*>* MeshDescritizer::getDescritization
     return allDescritizations;
 }
 
-void MeshDescritizer::updateCoefficients(std::vector<BoundaryCondition*> *conditions) {
-    
-    for(int i=0; i< conditions->size(); i++){
-        BoundaryCondition* bc = (*conditions)[i];
-        std::vector<Face*> *faces = bc->getFaces();
-        for(int j=0; j<faces->size(); j++){
-            Face* face = (*faces)[j];
-            //find connected cell
-            const FvCell* cell = face->getCell1();
-            if(cell == NULL){
-                cell = face->getCell2();
-            }
-            
-            //adjust su or sp component of the particular face
-            CellDescritization* des = allDescritizations->find(cell)->second;
-            if(bc->getType() == BoundaryCondition::FIXED_VALUE){       
-                des->scaleDiffusionSuComponent(face, bc->getValue());
-            }else if(bc->getType() == BoundaryCondition::ADIABATIC){
-                des->scaleDiffusionSuComponent(face, 0.0);
-                des->scaleDiffusionSpComponent(face, 0.0);
-            }else if(bc->getType() == BoundaryCondition::FIXED_FLUX){
-                des->scaleDiffusionSuComponent(face, 0.0);
-                double appendValue = bc->getValue()*face->getArea();
-                des->appendDiffusionSuComponent(face, appendValue);
-                des->scaleDiffusionSpComponent(face, 0.0);
-            }
-        }
-    }
-}
+//void MeshDescritizer::updateCoefficients(std::vector<BoundaryCondition*> *conditions) {
+//    
+//    for(int i=0; i< conditions->size(); i++){
+//        BoundaryCondition* bc = (*conditions)[i];
+//        std::vector<Face*> *faces = bc->getFaces();
+//        for(int j=0; j<faces->size(); j++){
+//            Face* face = (*faces)[j];
+//            //find connected cell
+//            const FvCell* cell = face->getCell1();
+//            if(cell == NULL){
+//                cell = face->getCell2();
+//            }
+//            
+//            //adjust su or sp component of the particular face
+//            CellDescritization* des = allDescritizations->find(cell)->second;
+//            if(bc->getType() == BoundaryCondition::FIXED_VALUE){       
+//                des->scaleDiffusionSuComponent(face, bc->getValue());
+//            }else if(bc->getType() == BoundaryCondition::ADIABATIC){
+//                des->scaleDiffusionSuComponent(face, 0.0);
+//                des->scaleDiffusionSpComponent(face, 0.0);
+//            }else if(bc->getType() == BoundaryCondition::FIXED_FLUX){
+//                des->scaleDiffusionSuComponent(face, 0.0);
+//                double appendValue = bc->getValue()*face->getArea();
+//                des->appendDiffusionSuComponent(face, appendValue);
+//                des->scaleDiffusionSpComponent(face, 0.0);
+//            }
+//        }
+//    }
+//}
 
 void MeshDescritizer::updateCoefficientsWithBCs(std::vector<Boundary*> *boundaries){
     for(size_t i=0; i<boundaries->size(); i++){
