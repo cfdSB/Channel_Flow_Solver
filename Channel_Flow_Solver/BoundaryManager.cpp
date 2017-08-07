@@ -14,7 +14,7 @@
 #include "BoundaryManager.h"
 
 BoundaryManager::BoundaryManager(VolumeMesh *mesh): mesh(mesh) {
-    boundaries = new BoundaryManager();
+    boundaries = new std::vector<Boundary*>();
 }
 
 BoundaryManager::BoundaryManager(const BoundaryManager& orig) {
