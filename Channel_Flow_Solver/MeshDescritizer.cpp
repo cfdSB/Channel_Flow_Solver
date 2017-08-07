@@ -75,9 +75,10 @@ void MeshDescritizer::populateConvectionCoefficients(FvCell* cell) {
     //x- direction convection flux
     const FvCell* xmCell = xmFace->getConnectingCell(cell);
     if(xmCell==NULL){
-        cd->addConvectionSuComponent(xmFace, density*xmFace->getArea());
+        double xmFaceVel = xmFace->getBoundary()->getBoundaryCondition("i_velocity")->getValue();
+        cd->addConvectionSuComponent(xmFace, density*xmFace->getArea()*xmFaceVel);
     }else{
-        double xmFaceVel = (*(xmCell->getSolutionField("U_Velocity")) + *(cell->getSolutionField("U_Velocity")))/2.0;
+        double xmFaceVel = (*(xmCell->getSolutionField("i_velocity")) + *(cell->getSolutionField("i_velocity")))/2.0;
         double faceFlux = xmFaceVel*density*xmFace->getArea();
         double xmConvFlux = -1.0*faceFlux/2.0;
         cd->addConvectionCoefficient(xmCell, xmConvFlux);
@@ -87,9 +88,10 @@ void MeshDescritizer::populateConvectionCoefficients(FvCell* cell) {
     //x+ direction convection flux
     const FvCell* xpCell = xpFace->getConnectingCell(cell);
     if(xpCell == NULL){
-        cd->addConvectionSuComponent(xpFace,-1.0*density*xpFace->getArea());
+        double xpFaceVel = xpFace->getBoundary()->getBoundaryCondition("i_velocity")->getValue();
+        cd->addConvectionSuComponent(xpFace,-1.0*density*xpFace->getArea()*xpFaceVel);
     }else{
-       double xpFaceVel = (*(xpCell->getSolutionField("U_Velocity")) + *(cell->getSolutionField("U_Velocity")))/2.0; 
+       double xpFaceVel = (*(xpCell->getSolutionField("i_velocity")) + *(cell->getSolutionField("i_velocity")))/2.0; 
        double faceFlux = xpFaceVel*density*xpFace->getArea();
        double xpConvFlux = faceFlux/2.0;
        cd->addConvectionCoefficient(xpCell, xpConvFlux);
@@ -100,9 +102,10 @@ void MeshDescritizer::populateConvectionCoefficients(FvCell* cell) {
     const FvCell* ymCell = ymFace->getConnectingCell(cell);
     
     if(ymCell == NULL){
-        cd->addConvectionSuComponent(ymFace, density*ymFace->getArea());
+        double ymFaceVel = ymFace->getBoundary()->getBoundaryCondition("j_velocity")->getValue();
+        cd->addConvectionSuComponent(ymFace, density*ymFace->getArea()*ymFaceVel);
     }else{
-        double ymFaceVel = (*(ymCell->getSolutionField("V_Velocity")) + *(cell->getSolutionField("V_Velocity")))/2.0;
+        double ymFaceVel = (*(ymCell->getSolutionField("j_velocity")) + *(cell->getSolutionField("j_velocity")))/2.0;
         double faceFlux = ymFaceVel*density*ymFace->getArea();
         double ymConvFlux = -1.0*faceFlux/2.0;
         cd->addConvectionCoefficient(ymCell, ymConvFlux);
@@ -112,9 +115,10 @@ void MeshDescritizer::populateConvectionCoefficients(FvCell* cell) {
     //y+ direction convective flux
     const FvCell* ypCell = ypFace->getConnectingCell(cell);
     if(ypCell == NULL){
-        cd->addConvectionSuComponent(ypFace,-1.0*density*ypFace->getArea());
+         double ypFaceVel = ypFace->getBoundary()->getBoundaryCondition("j_velocity")->getValue();
+        cd->addConvectionSuComponent(ypFace,-1.0*density*ypFace->getArea()*ypFaceVel);
     } else {
-        double ypFaceVel = (*(ypCell->getSolutionField("V_Velocity")) + *(cell->getSolutionField("V_Velocity"))) / 2.0;
+        double ypFaceVel = (*(ypCell->getSolutionField("j_velocity")) + *(cell->getSolutionField("j_velocity"))) / 2.0;
         double faceFlux = ypFaceVel * density * ypFace->getArea();
         double ypConvFlux = faceFlux / 2.0;
         cd->addConvectionCoefficient(ypCell, ypConvFlux);
@@ -124,9 +128,10 @@ void MeshDescritizer::populateConvectionCoefficients(FvCell* cell) {
     //z- direction convective flux
     const FvCell* zmCell = zmFace->getConnectingCell(cell);
     if (zmCell == NULL) {
-        cd->addConvectionSuComponent(zmFace, density * zmFace->getArea());
+        double zmFaceVel = zmFace->getBoundary()->getBoundaryCondition("k_velocity")->getValue();
+        cd->addConvectionSuComponent(zmFace, density * zmFace->getArea()*zmFaceVel);
     } else {
-        double zmFaceVel = (*(zmCell->getSolutionField("W_Velocity")) + *(cell->getSolutionField("W_Velocity")))/2.0;
+        double zmFaceVel = (*(zmCell->getSolutionField("k_velocity")) + *(cell->getSolutionField("k_velocity")))/2.0;
         double faceFlux = zmFaceVel*density*zmFace->getArea();
         double zmConvFlux = -1.0*faceFlux/2.0;
         cd->addConvectionCoefficient(zmCell, zmConvFlux);
@@ -136,9 +141,10 @@ void MeshDescritizer::populateConvectionCoefficients(FvCell* cell) {
     //z+ direction convective flux
     const FvCell* zpCell = zpFace->getConnectingCell(cell);
     if(zpCell == NULL){
-        cd->addConvectionSuComponent(zpFace,-1.0*density*zpFace->getArea());
+        double zpFaceVel = zpFace->getBoundary()->getBoundaryCondition("k_velocity")->getValue();
+        cd->addConvectionSuComponent(zpFace,-1.0*density*zpFace->getArea()*zpFaceVel);
     }else{
-        double zpFaceVel = (*(zpCell->getSolutionField("W_Velocity")) + *(cell->getSolutionField("W_Velocity"))) / 2.0;
+        double zpFaceVel = (*(zpCell->getSolutionField("k_velocity")) + *(cell->getSolutionField("k_velocity"))) / 2.0;
         double faceFlux = zpFaceVel * density * zpFace->getArea();
         double zpConvFlux = faceFlux / 2.0;
         cd->addConvectionCoefficient(zpCell, zpConvFlux);
@@ -225,6 +231,59 @@ void MeshDescritizer::updateCoefficients(std::vector<BoundaryCondition*> *condit
                 des->scaleDiffusionSpComponent(face, 0.0);
             }
         }
+    }
+}
+
+void MeshDescritizer::updateCoefficientsWithBCs(std::vector<Boundary*> *boundaries){
+    for(size_t i=0; i<boundaries->size(); i++){
+        Boundary* bnd = boundaries->at(i);
+        std::vector<Face*> *faces = bnd->getFaces();
+        for(size_t j=0; j<faces->size(); j++){
+            Face* face = faces->at(j);
+            updateConvectionCoefficientsWithBCs(face);
+            updateDiffusionCoefficientsWithBCs(face);
+        }
+    }
+    
+}
+
+void MeshDescritizer::updateDiffusionCoefficientsWithBCs(Face* face) {
+    //find connected cell
+    const FvCell* cell = face->getCell1();
+    if (cell == NULL) {
+        cell = face->getCell2();
+    }
+    
+    BoundaryCondition *bc = face->getBoundary()->getBoundaryCondition("Temperature");
+
+    //adjust su or sp component of the particular face
+    CellDescritization* des = allDescritizations->find(cell)->second;
+    if (bc->getType() == BoundaryCondition::FIXED_VALUE) {
+        des->scaleDiffusionSuComponent(face, bc->getValue());
+    } else if (bc->getType() == BoundaryCondition::ADIABATIC) {
+        des->scaleDiffusionSuComponent(face, 0.0);
+        des->scaleDiffusionSpComponent(face, 0.0);
+    } else if (bc->getType() == BoundaryCondition::FIXED_FLUX) {
+        des->scaleDiffusionSuComponent(face, 0.0);
+        double appendValue = bc->getValue() * face->getArea();
+        des->appendDiffusionSuComponent(face, appendValue);
+        des->scaleDiffusionSpComponent(face, 0.0);
+    }
+}
+
+void MeshDescritizer::updateConvectionCoefficientsWithBCs(Face* face) {
+    //find connected cell
+    const FvCell* cell = face->getCell1();
+    if (cell == NULL) {
+        cell = face->getCell2();
+    }
+
+    BoundaryCondition *bc = face->getBoundary()->getBoundaryCondition("Temperature");
+
+    //adjust su or sp component of the particular face
+    CellDescritization* des = allDescritizations->find(cell)->second;
+    if (bc->getType() == BoundaryCondition::FIXED_VALUE) {
+        des->scaleConvectionSuComponent(face, bc->getValue());
     }
 }
 

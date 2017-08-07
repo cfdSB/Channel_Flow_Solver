@@ -22,6 +22,7 @@
 #include "BoundaryCondition.h"
 #include "PhysicsContinuum.h"
 #include "Matrix.h"
+#include "Boundary.h"
 
 class VolumeMesh;   //forward declaration
 
@@ -38,6 +39,7 @@ public:
     std::map<const FvCell*, CellDescritization*>* getDescritizations();
     void updateCoefficients(std::vector<BoundaryCondition*> *conditions);
     //void updateCoefficients(PhysicsContinuum* pc);
+    void updateCoefficientsWithBCs(std::vector<Boundary*> *boundaries);
     Matrix* buildMatrix();
 
     
@@ -51,6 +53,8 @@ private:
     void generateDescritizationCoefficients(FvCell* cell);
     void populateDiffusionCoefficients(FvCell* cell);
     void populateConvectionCoefficients(FvCell* cell);
+    void updateConvectionCoefficientsWithBCs(Face* face);
+    void updateDiffusionCoefficientsWithBCs(Face* face);
     
 };
 
