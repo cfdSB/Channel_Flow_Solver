@@ -26,6 +26,7 @@ public:
     Boundary(std::string name, std::vector<Face*> *faces);
     Boundary(const Boundary& orig);
     virtual ~Boundary();
+    void addBoundaryCondition(BoundaryCondition *bc);
     void addBoundaryCondition(std::string variableName, BoundaryCondition *bc);
     BoundaryCondition* getBoundaryCondition(std::string variableName) const;
     std::vector<Face*>* getFaces() const;

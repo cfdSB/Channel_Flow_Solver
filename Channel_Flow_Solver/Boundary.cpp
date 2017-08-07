@@ -44,3 +44,7 @@ BoundaryCondition* Boundary::getBoundaryCondition(std::string variableName) cons
     return boundaryConditions->at(variableName);
 }
 
+void Boundary::addBoundaryCondition(BoundaryCondition* bc) {
+    addBoundaryCondition(bc->getSolutionVariable()->GetVariableName(), bc);
+}
+
