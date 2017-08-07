@@ -33,15 +33,15 @@ std::vector<BoundaryCondition*>* BoundaryConditionsManager::getBoundaryCondition
     return allBoundaryConditions;
 }
 
-BoundaryCondition* BoundaryConditionsManager::createBoundaryCondition(BoundaryCondition::BcType type, double value) {
-    BoundaryCondition* bc = new BoundaryCondition(type, value);
+BoundaryCondition* BoundaryConditionsManager::createBoundaryCondition(SolutionVariable* variable, BoundaryCondition::BcType type, double value) {
+    BoundaryCondition* bc = new BoundaryCondition(variable, type, value);
     allBoundaryConditions->push_back(bc);
 }
 
-void BoundaryConditionsManager::createBoundaryCondition(std::string plane, double faceCoordinate, double faceTolerance, BoundaryCondition::BcType type, double bcValue) {
-    
-    createBoundaryCondition(type, bcValue);
-}
+//void BoundaryConditionsManager::createBoundaryCondition(std::string plane, double faceCoordinate, double faceTolerance, BoundaryCondition::BcType type, double bcValue) {
+//    
+//    createBoundaryCondition(type, bcValue);
+//}
 
 void BoundaryConditionsManager::printBoundaryConditionsReport() {
     std::vector<BoundaryCondition*>::iterator it = allBoundaryConditions->begin();

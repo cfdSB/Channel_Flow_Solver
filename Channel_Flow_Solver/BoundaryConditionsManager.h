@@ -22,8 +22,8 @@ public:
     BoundaryConditionsManager(const BoundaryConditionsManager& orig);
     virtual ~BoundaryConditionsManager();
     std::vector<BoundaryCondition*>* getBoundaryConditions();
-    BoundaryCondition* createBoundaryCondition(BoundaryCondition::BcType type, double value);
-    void createBoundaryCondition(std::string plane, double faceCoordinate, double faceTolerance, BoundaryCondition::BcType type,double bcValue);
+    BoundaryCondition* createBoundaryCondition(SolutionVariable *variable, BoundaryCondition::BcType type, double value);
+//    void createBoundaryCondition(std::string plane, double faceCoordinate, double faceTolerance, BoundaryCondition::BcType type,double bcValue);
     void printBoundaryConditionsReport();
 private:
     std::vector<BoundaryCondition*>* allBoundaryConditions;
