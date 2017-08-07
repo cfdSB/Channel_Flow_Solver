@@ -36,5 +36,6 @@ Boundary* BoundaryManager::createBoundary(std::string name, std::string plane, d
     }
     Boundary *newBoundary = new Boundary(name, boundaryFaces);
     boundaries->push_back(newBoundary);
+    return newBoundary;
 }
 
