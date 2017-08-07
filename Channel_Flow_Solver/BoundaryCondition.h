@@ -26,9 +26,9 @@ public:
     BoundaryCondition(SolutionVariable *variable, BcType type, double value);
     BoundaryCondition(const BoundaryCondition& orig);
     virtual ~BoundaryCondition();    
-    BcType getType();
-    
-    double getValue();
+    BcType getType() const;
+    SolutionVariable* getSolutionVariable() const;
+    double getValue() const;
     std::string toString() override;
 
 private:

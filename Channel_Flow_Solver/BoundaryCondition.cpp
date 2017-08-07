@@ -24,13 +24,13 @@ BoundaryCondition::BoundaryCondition(const BoundaryCondition& orig) {
 BoundaryCondition::~BoundaryCondition() {
 }
 
-BoundaryCondition::BcType BoundaryCondition::getType() {
+BoundaryCondition::BcType BoundaryCondition::getType() const{
     return type;
 }
 
 
 
-double BoundaryCondition::getValue() {
+double BoundaryCondition::getValue() const{
     return value;
 }
 
@@ -45,6 +45,10 @@ std::string BoundaryCondition::toString() {
     str << "Bc Value: " << value << std::endl;
     
     return str.str();
+}
+
+SolutionVariable* BoundaryCondition::getSolutionVariable() const {
+    return variable;
 }
 
 
