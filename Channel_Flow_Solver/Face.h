@@ -21,6 +21,7 @@
 #include "FvCell.h"
 
 class FvCell;   //forward declaration to avoid circular dependency situation in header files
+class Boundary;
 
 class Face : public Object{
     
@@ -28,6 +29,7 @@ private:
     Point* centroid;    //face centroid
     double length, width;   //face dimensions
     FvCell *cell1, *cell2;  //cells connected to faces
+    Boundary *boundary;     //boundary connected to face
     
 public:
     Face(Point* centroid, double length, double width);
@@ -42,6 +44,8 @@ public:
     std::string toString() override;
     const FvCell* getConnectingCell(FvCell* cell) const;
     double getArea() const;
+    Boundary* getBoundary() const;
+    void setBoundary(Boundary* boundary);
 
     
 };
