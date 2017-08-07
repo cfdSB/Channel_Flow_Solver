@@ -33,14 +33,14 @@ std::vector<BoundaryCondition*>* BoundaryConditionsManager::getBoundaryCondition
     return allBoundaryConditions;
 }
 
-void BoundaryConditionsManager::createBoundaryCondition(BoundaryCondition::BcType type, std::vector<Face*> faces, double value) {
-    BoundaryCondition* bc = new BoundaryCondition(type, faces, value);
+BoundaryCondition* BoundaryConditionsManager::createBoundaryCondition(BoundaryCondition::BcType type, double value) {
+    BoundaryCondition* bc = new BoundaryCondition(type, value);
     allBoundaryConditions->push_back(bc);
 }
 
 void BoundaryConditionsManager::createBoundaryCondition(std::string plane, double faceCoordinate, double faceTolerance, BoundaryCondition::BcType type, double bcValue) {
-    std::vector<Face*> matchingFaces = mesh->findFaces(plane,faceCoordinate,faceTolerance);
-    createBoundaryCondition(type, matchingFaces, bcValue);
+    
+    createBoundaryCondition(type, bcValue);
 }
 
 void BoundaryConditionsManager::printBoundaryConditionsReport() {
