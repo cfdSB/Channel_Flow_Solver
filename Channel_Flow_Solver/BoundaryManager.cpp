@@ -39,3 +39,8 @@ Boundary* BoundaryManager::createBoundary(std::string name, std::string plane, d
     return newBoundary;
 }
 
+std::vector<Boundary*>* BoundaryManager::getBoundaries() {
+    return boundaries;
+}
+
+

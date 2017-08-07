@@ -24,6 +24,7 @@ public:
     BoundaryManager(const BoundaryManager& orig);
     virtual ~BoundaryManager();
     Boundary* createBoundary(std::string name, std::string plane, double faceCoordinate);
+    std::vector<Boundary*>* getBoundaries();
 private:
     std::vector<Boundary*> *boundaries;
     VolumeMesh *mesh;
