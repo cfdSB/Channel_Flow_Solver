@@ -163,5 +163,13 @@ void CellDescritization::appendDiffusionSuComponent(Face* face, double appendVal
     }
 }
 
+void CellDescritization::scaleConvectionSuComponent(Face* face, double scaleFactor) {
+    std::map<Face*, double>::iterator it = convectionSuComponents->find(face);
+    if (it != convectionSuComponents->end()) {
+        double d = it->second;
+        double adjustedValue = d * scaleFactor;
+        it->second = adjustedValue;
+    }
+}
 
 

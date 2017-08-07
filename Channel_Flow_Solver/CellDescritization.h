@@ -41,6 +41,7 @@ public:
     void addConvectionSuComponent(Face* face, double value);
     void addConvectionSpComponent(Face* face, double value);
     void addConvectionMassBalanceComponent(const FvCell* cell, double component);
+    void scaleConvectionSuComponent(Face* face, double scaleFactor);
     
     FvCell* getCell();
     std::string toString() override;
