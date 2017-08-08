@@ -16,6 +16,9 @@
 
 MatrixSolver::MatrixSolver(long numberOfVariables, double** coefficientMatrix, double* rhsVector, std::vector<double> *solutionVector):
 numberOfVariables(numberOfVariables), coefficientMatrix(coefficientMatrix), rhsVector(rhsVector), solutionVector(solutionVector){
+    
+    tmpSolution.reset(new double[numberOfVariables]);
+    errorVector.reset(new double[numberOfVariables]);
 }
 
 MatrixSolver::MatrixSolver(const MatrixSolver& orig) {
@@ -25,7 +28,6 @@ MatrixSolver::~MatrixSolver() {
 }
 
 void MatrixSolver::iterateJacobi() {
-    std::unique_ptr<double[]> tmpSolution(new double[numberOfVariables]);
     
     //initialize tmp solution with initial solution
     for(long i=0; i< numberOfVariables; i++){
@@ -55,7 +57,6 @@ void MatrixSolver::iterateJacobi() {
 }
 
 double MatrixSolver::calculateResidual() {
-    std::unique_ptr<double[]> errorVector(new double[numberOfVariables]);
     
     for(long i=0; i< numberOfVariables; i++){
         
