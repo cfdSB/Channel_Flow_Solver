@@ -72,12 +72,12 @@ int main(int argc, char** argv) {
     temperature->initializeVariable(0.0);
 
     //debug statements
-    std::vector<FvCell*> *cells = mesh->getCells();
-    for (size_t i = 0; i < cells->size(); i++) {
-        double val1 = *(cells->at(i)->getSolutionField("i_velocity"));
-        double val2 = *(cells->at(i)->getSolutionField("j_velocity"));
-        std::cout << val1 << ", " << val2 << std::endl;
-    }
+//    std::vector<FvCell*> *cells = mesh->getCells();
+//    for (size_t i = 0; i < cells->size(); i++) {
+//        double val1 = *(cells->at(i)->getSolutionField("i_velocity"));
+//        double val2 = *(cells->at(i)->getSolutionField("j_velocity"));
+//        std::cout << val1 << ", " << val2 << std::endl;
+//    }
     
     std::unique_ptr<BoundaryConditionsManager> bcManager (new BoundaryConditionsManager(mesh));
     BoundaryCondition* bc_xm = bcManager->createBoundaryCondition(temperature, BoundaryCondition::BcType::FIXED_FLUX, 500.00);
@@ -91,8 +91,6 @@ int main(int argc, char** argv) {
     BoundaryCondition* bc_vel1_rest = bcManager->createBoundaryCondition(vel_i, BoundaryCondition::BcType::FIXED_VALUE, 0.0);
     BoundaryCondition* bc_vel2_rest = bcManager->createBoundaryCondition(vel_j, BoundaryCondition::BcType::FIXED_VALUE, 0.0);
     BoundaryCondition* bc_vel3_rest = bcManager->createBoundaryCondition(vel_k, BoundaryCondition::BcType::FIXED_VALUE, 0.0);
-
-
 
     bcManager->printBoundaryConditionsReport();    
     
@@ -108,7 +106,10 @@ int main(int argc, char** argv) {
     discretizer->computeDiscretizationCoefficients();
     discretizer->printCoefficients();
    
-    discretizer->updateCoefficients(bcManager->getBoundaryConditions());
+//    discretizer->updateCoefficients(bcManager->getBoundaryConditions());
+//    discretizer->printCoefficients();
+    
+    discretizer->updateCoefficientsWithBCs(bndManager->getBoundaries());
     discretizer->printCoefficients();
     
     Matrix* coefficientMatrix = discretizer->buildMatrix();
@@ -119,14 +120,14 @@ int main(int argc, char** argv) {
     double* rhs = coefficientMatrix->getRhsArray();
     long numberOfVariables = coefficientMatrix->getNumberOfVariables();
     
-    std::unique_ptr<double[]> solnVector(new double[numberOfVariables]);
+    //std::unique_ptr<double[]> solnVector(new double[numberOfVariables]);
     
-    MatrixSolver *solver = new MatrixSolver(numberOfVariables,A,rhs,solnVector.get());
+    MatrixSolver *solver = new MatrixSolver(numberOfVariables,A,rhs,temperature->GetVariableValues());
     solver->iterateJacobi();
 
     std::cout << "Solution" << std::endl;
     for (long i = 0; i < numberOfVariables; i++) {
-        std::cout << solnVector[i] << std::endl;
+        std::cout << *(mesh->getCells()->at(i)->getSolutionField("Temperature")) << std::endl;
     }
     
     return 0;
