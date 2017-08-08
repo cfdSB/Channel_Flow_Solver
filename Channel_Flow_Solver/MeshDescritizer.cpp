@@ -55,7 +55,7 @@ void MeshDescritizer::generateDescritizationCoefficients(FvCell* cell) {
     allDescritizations->insert(std::make_pair(cell, cd));
 
     populateDiffusionCoefficients(cell);
-    populateConvectionCoefficients(cell);
+    //populateConvectionCoefficients(cell);
 }
 
 void MeshDescritizer::populateConvectionCoefficients(FvCell* cell) {
@@ -240,7 +240,7 @@ void MeshDescritizer::updateCoefficientsWithBCs(std::vector<Boundary*> *boundari
         std::vector<Face*> *faces = bnd->getFaces();
         for(size_t j=0; j<faces->size(); j++){
             Face* face = faces->at(j);
-            updateConvectionCoefficientsWithBCs(face);
+            //updateConvectionCoefficientsWithBCs(face);
             updateDiffusionCoefficientsWithBCs(face);
         }
     }
@@ -326,36 +326,22 @@ Matrix* MeshDescritizer::buildMatrix() {
     //populate matrix coefficients
     i = 0;
     for (cellP_desc_map it = allDescritizations->begin(); it != allDescritizations->end(); it++) {
-        
+        const FvCell *cell = it->first;
         CellDescritization* cd = it->second;
+        
         std::map<const FvCell*, double>* coeffs = cd->getDiffusionCoefficients();
-
         //loop through each neighbor cell and update matrix
         typedef std::map<const FvCell*, double>::iterator cellP_double_map;
-        double cellCoefficient = 0; //the coefficient of the cell itself
         for (cellP_double_map it = coeffs->begin(); it != coeffs->end(); it++) {
             const FvCell* neighborCell = it->first;
             double value = it->second;
             
             long rowNumber = i;
             long columnNumber = matrix->getVariableIndex(neighborCell);
-            
-            cellCoefficient = cellCoefficient + value;  //calcuation of ap
-            
-            //value = value* -1.0;    // matrix rearrangement needs this negation.
             matrix->setCoefficient(rowNumber, columnNumber, value);
         }
-        
-        //update the coefficient of the cell itself
-        std::map<Face*, double>* spComps = cd->getDiffusionSpComponents();
-        typedef std::map<Face*, double>::iterator faceP_double_map;
-        double spCoefficient = 0; //the coefficient of the cell itself
-        for (faceP_double_map it = spComps->begin(); it != spComps->end(); it++) {
-            double value = it->second;
-            spCoefficient = spCoefficient + value;
-        }
-        //Ap definition Ap = -(Ae + Aw) - Sp
-        cellCoefficient = -1.0*cellCoefficient - spCoefficient; //sum of all neighbor cell coeffs - sp coefficients
+        //compute the coefficient of the cell itself
+        double cellCoefficient = computeCellCoefficientFromNeighborCellsCoefficients(cell);
         long rowNumber = i;
         long columnNumber = i;
         matrix->setCoefficient(rowNumber, columnNumber, cellCoefficient);
@@ -383,5 +369,31 @@ Matrix* MeshDescritizer::buildMatrix() {
     
     return matrix;
 }
+
+double MeshDescritizer::computeCellCoefficientFromNeighborCellsCoefficients(const FvCell* cell) {
+    double cellCoefficient = 0; //the coefficient of the cell itself
+
+    CellDescritization *cd = allDescritizations->at(cell);
+    std::map<const FvCell*, double>* coeffs = cd->getDiffusionCoefficients();
+
+    typedef std::map<const FvCell*, double>::iterator cellP_double_map;
+    for (cellP_double_map it = coeffs->begin(); it != coeffs->end(); it++) {
+        double value = it->second;
+        cellCoefficient = cellCoefficient + value; //calcuation of ap
+    }
+
+    std::map<Face*, double>* spComps = cd->getDiffusionSpComponents();
+    typedef std::map<Face*, double>::iterator faceP_double_map;
+    double spCoefficient = 0; //the coefficient of the cell itself
+    for (faceP_double_map it = spComps->begin(); it != spComps->end(); it++) {
+        double value = it->second;
+        spCoefficient = spCoefficient + value;
+    }
+    //Ap definition Ap = -(Ae + Aw) - Sp
+    cellCoefficient = -1.0 * cellCoefficient - spCoefficient; //sum of all neighbor cell coeffs - sp coefficients        
+
+    return cellCoefficient;
+}
+
 
 

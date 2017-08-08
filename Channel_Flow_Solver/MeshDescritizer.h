@@ -56,6 +56,8 @@ private:
     void updateConvectionCoefficientsWithBCs(Face* face);
     void updateDiffusionCoefficientsWithBCs(Face* face);
     
+    double computeCellCoefficientFromNeighborCellsCoefficients(const FvCell*);
+    
 };
 
 #endif /* MESHDESCRITIZER_H */
