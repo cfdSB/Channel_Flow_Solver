@@ -14,7 +14,7 @@
 #include "MatrixSolver.h"
 #include <cmath>
 
-MatrixSolver::MatrixSolver(long numberOfVariables, double** coefficientMatrix, double* rhsVector, double* solutionVector):
+MatrixSolver::MatrixSolver(long numberOfVariables, double** coefficientMatrix, double* rhsVector, std::vector<double> *solutionVector):
 numberOfVariables(numberOfVariables), coefficientMatrix(coefficientMatrix), rhsVector(rhsVector), solutionVector(solutionVector){
 }
 
@@ -29,7 +29,7 @@ void MatrixSolver::iterateJacobi() {
     
     //initialize tmp solution with initial solution
     for(long i=0; i< numberOfVariables; i++){
-        tmpSolution[i]= solutionVector[i];
+        tmpSolution[i]= solutionVector->at(i);
     }
 
     double residual =0.0;
@@ -38,7 +38,7 @@ void MatrixSolver::iterateJacobi() {
             double sum = 0.0;
             for (long j = 0; j < numberOfVariables; j++) {
                 if (j != i) {
-                    sum = sum + coefficientMatrix[i][j] * solutionVector[j];
+                    sum = sum + coefficientMatrix[i][j] * solutionVector->at(j);
                 }
             }
             tmpSolution[i] = (rhsVector[i] - sum) / coefficientMatrix[i][i];
@@ -47,7 +47,7 @@ void MatrixSolver::iterateJacobi() {
         std::cout<< "residual: " << residual << std::endl;
         
         for (long i = 0; i < numberOfVariables; i++) {
-            solutionVector[i] = tmpSolution[i];
+            solutionVector->at(i) = tmpSolution[i];
         }
         
     } while (residual > residualTolerance);
@@ -61,7 +61,7 @@ double MatrixSolver::calculateResidual() {
         
         double sum = 0;
         for(long j=0; j<numberOfVariables; j++){
-            sum = sum + coefficientMatrix[i][j]*solutionVector[j];
+            sum = sum + coefficientMatrix[i][j]*solutionVector->at(j);
         }
         
         errorVector[i]= rhsVector[i] - sum;
