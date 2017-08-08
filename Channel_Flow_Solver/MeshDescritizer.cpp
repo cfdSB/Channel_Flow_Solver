@@ -297,37 +297,36 @@ void MeshDescritizer::updateConvectionCoefficientsWithBCs(Face* face) {
 //}
 
 Matrix* MeshDescritizer::buildMatrix() {
-    
-    long numberOfVariables = allDescritizations->size();
-    if(matrix== NULL){
+
+    if (matrix == NULL) {
+        long numberOfVariables = allDescritizations->size();
         matrix = new Matrix(numberOfVariables);
-    }
-    
-    //initialize all coefficients to zero
-    for(long i=0; i<numberOfVariables; i++){
-        for(long j=0; j<numberOfVariables; j++){
-            matrix->setCoefficient(i, j, 0.0);
+
+        //initialize all coefficients to zero
+        for (long i = 0; i < numberOfVariables; i++) {
+            for (long j = 0; j < numberOfVariables; j++) {
+                matrix->setCoefficient(i, j, 0.0);
+            }
         }
-    }    
-    
-    for(long i=0; i<numberOfVariables; i++){
-        matrix->setRhs(i, 0.0);
-    }
-    
-    //set solution variables (cells)
-    typedef std::map<const FvCell*, CellDescritization*>::iterator cellP_desc_map;
-    long i = 0;
-    for(cellP_desc_map it = allDescritizations->begin(); it!= allDescritizations->end(); it++){
-        CellDescritization* cd = it->second;
-        matrix->setVariable(i, cd->getCell());
-        i++;
+
+        for (long i = 0; i < numberOfVariables; i++) {
+            matrix->setRhs(i, 0.0);
+        }
+
+        //set solution variables (cells)
+        long i = 0;
+        std::vector<FvCell*> *allCells = mesh->getCells();
+        for (i = 0; i < allCells->size(); i++) {
+            matrix->setVariable(i, allCells->at(i));
+        }
     }
     
     //populate matrix coefficients
-    i = 0;
-    for (cellP_desc_map it = allDescritizations->begin(); it != allDescritizations->end(); it++) {
-        const FvCell *cell = it->first;
-        CellDescritization* cd = it->second;
+    std::vector<FvCell*> *allCells = mesh->getCells();
+    long i = 0;
+    for (i=0; i<allCells->size(); i++) {
+        const FvCell *cell = allCells->at(i);
+        CellDescritization* cd = allDescritizations->at(cell);
         
         std::map<const FvCell*, double>* coeffs = cd->getDiffusionCoefficients();
         //loop through each neighbor cell and update matrix
@@ -346,14 +345,12 @@ Matrix* MeshDescritizer::buildMatrix() {
         long columnNumber = i;
         matrix->setCoefficient(rowNumber, columnNumber, cellCoefficient);
 
-        i++;
     }
     
     //populate RHS coefficients
-    i = 0;
-    for (cellP_desc_map it = allDescritizations->begin(); it != allDescritizations->end(); it++) {
-        
-        CellDescritization* cd = it->second;
+    for (i=0; i<allCells->size(); i++) {
+        const FvCell *cell = allCells->at(i);
+        CellDescritization* cd = allDescritizations->at(cell);
         
         std::map<Face*, double>* suComps = cd->getDiffusionSuComponents();
         typedef std::map<Face*, double>::iterator faceP_double_map;
@@ -363,8 +360,6 @@ Matrix* MeshDescritizer::buildMatrix() {
             suCoefficient = suCoefficient + value;
         }
         matrix->setRhs(i, suCoefficient);
-        
-        i++;
     }
     
     return matrix;
