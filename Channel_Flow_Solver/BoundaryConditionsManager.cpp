@@ -22,8 +22,8 @@ BoundaryConditionsManager::BoundaryConditionsManager(const BoundaryConditionsMan
 }
 
 BoundaryConditionsManager::~BoundaryConditionsManager() {
-    for(int i=0; i< allBoundaryConditions->size(); i++){
-        BoundaryCondition* bc = (*allBoundaryConditions)[i];
+    for(size_t i=0; i< allBoundaryConditions->size(); i++){
+        BoundaryCondition* bc = allBoundaryConditions->at(i);
         delete bc;
     }
     delete allBoundaryConditions;
@@ -36,6 +36,7 @@ std::vector<BoundaryCondition*>* BoundaryConditionsManager::getBoundaryCondition
 BoundaryCondition* BoundaryConditionsManager::createBoundaryCondition(SolutionVariable* variable, BoundaryCondition::BcType type, double value) {
     BoundaryCondition* bc = new BoundaryCondition(variable, type, value);
     allBoundaryConditions->push_back(bc);
+    return bc;
 }
 
 //void BoundaryConditionsManager::createBoundaryCondition(std::string plane, double faceCoordinate, double faceTolerance, BoundaryCondition::BcType type, double bcValue) {
