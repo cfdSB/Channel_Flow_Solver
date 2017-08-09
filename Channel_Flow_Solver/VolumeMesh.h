@@ -30,7 +30,6 @@ public:
     long getPointCount();
     std::vector<FvCell*>* getCells();
     std::vector<Face*>* getFaces();
-    std::vector<Boundary*>* getBoundaries();
     Face* findFace(Face* faceToCompare, double tolerance);
     std::vector<Face*> findFaces(std::string plane, double value, double tolerance);
     void printCells();
@@ -39,7 +38,7 @@ public:
     friend class MeshBuilder;
     
     void addBoundary(Boundary* boundary);
-    std::vector<Boundary*>* VolumeMesh::getBoundaries() const;    
+    std::vector<Boundary*>* getBoundaries() const;    
     
 private:
     std::vector<Point*>* allPoints;

@@ -26,6 +26,7 @@
 #include "Material.h"
 #include "SolutionManager.h"
 #include "BoundaryManager.h"
+#include "Boundary.h"
 
 using namespace std;
 
@@ -60,6 +61,10 @@ int main(int argc, char** argv) {
     Boundary *bnd_yp = bndManager->createBoundary("yp", "y", yMax);
     Boundary *bnd_zm = bndManager->createBoundary("zm", "z", zMin);
     Boundary *bnd_zp = bndManager->createBoundary("zp", "z", zMax);
+    
+    mesh->addBoundary(bnd_xm); mesh->addBoundary(bnd_xp); 
+    mesh->addBoundary(bnd_ym); mesh->addBoundary(bnd_yp);
+    mesh->addBoundary(bnd_zm); mesh->addBoundary(bnd_zp);
     
     std::unique_ptr<SolutionManager> solManager (new SolutionManager(mesh));
     SolutionVariable* vel_i = solManager->createSolutionVariable("i_velocity", SolutionVariable::variableType::FIXED_FIELD);
@@ -109,7 +114,7 @@ int main(int argc, char** argv) {
 //    discretizer->updateCoefficients(bcManager->getBoundaryConditions());
 //    discretizer->printCoefficients();
     
-    discretizer->updateCoefficientsWithBCs(bndManager->getBoundaries());
+    discretizer->updateCoefficientsWithBCs(mesh->getBoundaries());
     discretizer->printCoefficients();
     
     Matrix* coefficientMatrix = discretizer->buildMatrix();

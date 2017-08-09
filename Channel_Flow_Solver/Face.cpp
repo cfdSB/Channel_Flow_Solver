@@ -72,7 +72,7 @@ Boundary* Face::getBoundary() const {
 
 void Face::setBoundary(Boundary* boundary) {
     this->boundary = boundary;
-    if(Boundary!=NULL){
+    if(this->boundary!=NULL){
         fType = FaceType::BOUNDARY_FACE;
     }
 }
@@ -101,7 +101,7 @@ Face::FaceType Face::getType() const {
     return fType;
 }
 
-void Face::setType(FaceType type) const {
+void Face::setType(FaceType type) {
     fType = type;
 }
 
