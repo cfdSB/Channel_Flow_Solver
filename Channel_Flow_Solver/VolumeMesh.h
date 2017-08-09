@@ -18,6 +18,7 @@
 #include "Face.h"
 #include "FvCell.h"
 #include "MeshUtilities.h"
+#include "Boundary.h"
 
 class VolumeMesh {
 public:
@@ -29,6 +30,7 @@ public:
     long getPointCount();
     std::vector<FvCell*>* getCells();
     std::vector<Face*>* getFaces();
+    std::vector<Boundary*>* getBoundaries();
     Face* findFace(Face* faceToCompare, double tolerance);
     std::vector<Face*> findFaces(std::string plane, double value, double tolerance);
     void printCells();
@@ -36,10 +38,14 @@ public:
     void removeSolutionFieldFromMesh(std::string fieldName);
     friend class MeshBuilder;
     
+    void addBoundary(Boundary* boundary);
+    std::vector<Boundary*>* VolumeMesh::getBoundaries() const;    
+    
 private:
     std::vector<Point*>* allPoints;
     std::vector<Face*>* allFaces;
     std::vector<FvCell*>* allCells;
+    std::vector<Boundary*>* allBoundaries;
     
     void addPoint(Point* point);
     void addFace(Face* face);

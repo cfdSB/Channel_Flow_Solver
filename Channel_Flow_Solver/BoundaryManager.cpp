@@ -14,17 +14,12 @@
 #include "BoundaryManager.h"
 
 BoundaryManager::BoundaryManager(VolumeMesh *mesh): mesh(mesh) {
-    boundaries = new std::vector<Boundary*>();
 }
 
 BoundaryManager::BoundaryManager(const BoundaryManager& orig) {
 }
 
 BoundaryManager::~BoundaryManager() {
-    for(size_t i=0; i<boundaries->size(); i++){
-        delete boundaries->at(i);
-    }
-    delete boundaries;
 }
 
 Boundary* BoundaryManager::createBoundary(std::string name, std::string plane, double faceCoordinate) {
@@ -35,12 +30,8 @@ Boundary* BoundaryManager::createBoundary(std::string name, std::string plane, d
         boundaryFaces->push_back(matchingFaces.at(i));
     }
     Boundary *newBoundary = new Boundary(name, boundaryFaces);
-    boundaries->push_back(newBoundary);
     return newBoundary;
 }
 
-std::vector<Boundary*>* BoundaryManager::getBoundaries() {
-    return boundaries;
-}
 
 

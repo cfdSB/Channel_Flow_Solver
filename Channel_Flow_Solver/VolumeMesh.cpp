@@ -19,6 +19,7 @@ VolumeMesh::VolumeMesh() {
     allPoints = new std::vector<Point*>();
     allFaces = new std::vector<Face*>();
     allCells = new std::vector<FvCell*>();
+    allBoundaries = new std::vector<Boundary*> ();
 }
 
 VolumeMesh::VolumeMesh(const VolumeMesh& orig) {
@@ -45,7 +46,14 @@ VolumeMesh::~VolumeMesh() {
         FvCell* p = (*allCells)[i];
         delete p;
     }
-    delete allCells;    //delete vector object    
+    delete allCells;    //delete vector object 
+    
+    //delete all boundary objects
+    for (int i = 0; i < allBoundaries->size(); i++) {
+        Boundary* p = (*allBoundaries)[i];
+        delete p;
+    }
+    delete allBoundaries;    //delete vector object    
 }
 
 void VolumeMesh::addPoint(Point* point) {
@@ -147,7 +155,13 @@ void VolumeMesh::removeSolutionFieldFromMesh(std::string fieldName) {
     }
 }
 
+void VolumeMesh::addBoundary(Boundary* boundary) {
+    allBoundaries->push_back(boundary);
+}
 
+std::vector<Boundary*>* VolumeMesh::getBoundaries() const{
+    return allBoundaries;
+}
 
 
 
