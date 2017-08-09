@@ -133,6 +133,20 @@ std::vector<Face*> VolumeMesh::findFaces(std::string plane, double value, double
     return faces;
 }
 
+void VolumeMesh::addSolutionFieldToMesh(std::string fieldName, std::vector<double>* values) {
+  for(long i=0; i<allCells->size(); i++){
+      FvCell* cell = allCells->at(i);
+      cell->addSolutionField(fieldName, &values->at(i));
+  }  
+}
+
+void VolumeMesh::removeSolutionFieldFromMesh(std::string fieldName) {
+    for(int i=0; i<allCells->size(); i++){
+        FvCell* cell = allCells->at(i);
+        cell->removeSolutionField(fieldName);
+    }
+}
+
 
 
 

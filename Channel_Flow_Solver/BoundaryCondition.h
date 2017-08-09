@@ -16,23 +16,24 @@
 #include "Face.h"
 #include <vector>
 #include "Object.h"
+#include "SolutionVariable.h"
 
 class BoundaryCondition: public Object {
     
 public:
     enum BcType {FIXED_VALUE, ADIABATIC, FIXED_FLUX};
     
-    BoundaryCondition(BcType type, std::vector<Face*> faces, double value);
+    BoundaryCondition(SolutionVariable *variable, BcType type, double value);
     BoundaryCondition(const BoundaryCondition& orig);
     virtual ~BoundaryCondition();    
-    BcType getType();
-    std::vector<Face*>* getFaces();
-    double getValue();
+    BcType getType() const;
+    SolutionVariable* getSolutionVariable() const;
+    double getValue() const;
     std::string toString() override;
 
 private:
     BcType type;
-    std::vector<Face*> faces;
+    SolutionVariable *variable;
     double value;
 
 };

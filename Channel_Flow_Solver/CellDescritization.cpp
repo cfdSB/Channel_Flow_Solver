@@ -16,63 +16,90 @@
 #include "FvCell.h"
 
 CellDescritization::CellDescritization(FvCell* cell):cell(cell) {
-    coefficients = new std::map<const FvCell*, double>();
-    suComponents = new std::map<Face*, double> ();
-    spComponents = new std::map<Face*, double> ();
+    diffusionCoefficients = new std::map<const FvCell*, double>();
+    diffusionSuComponents = new std::map<Face*, double> ();
+    diffusionSpComponents = new std::map<Face*, double> ();
+    
+    convectionCoefficients = new std::map<const FvCell*, double>();
+    convectionSuComponents = new std::map<Face*, double> ();
+    convectionSpComponents = new std::map<Face*, double> ();
+    massBalanceCoefficients = new std::map<const FvCell*, double>();
 }
 
 CellDescritization::CellDescritization(const CellDescritization& orig) {
 }
 
 CellDescritization::~CellDescritization() {
-    delete coefficients;
-    delete suComponents;
-    delete spComponents;
+    delete diffusionCoefficients;
+    delete diffusionSuComponents;
+    delete diffusionSpComponents;
+    
+    delete convectionCoefficients;
+    delete convectionSuComponents;
+    delete convectionSpComponents;
+    delete massBalanceCoefficients;
 }
 
-std::map<const FvCell*, double>* CellDescritization::getCoefficients() {
-    return coefficients;
+std::map<const FvCell*, double>* CellDescritization::getDiffusionCoefficients() {
+    return diffusionCoefficients;
 }
 
-void CellDescritization::addCoefficient(const FvCell* cell, double value) {
-    coefficients->insert(std::make_pair(cell, value));
+void CellDescritization::addDiffusionCoefficient(const FvCell* cell, double value) {
+    diffusionCoefficients->insert(std::make_pair(cell, value));
 }
 
-void CellDescritization::addSpComponent(Face* face, double value) {
-    spComponents->insert(std::make_pair(face, value));
+void CellDescritization::addDiffusionSpComponent(Face* face, double value) {
+    diffusionSpComponents->insert(std::make_pair(face, value));
 }
 
-std::map<Face*, double>* CellDescritization::getSpComponents() {
-    return spComponents;
+std::map<Face*, double>* CellDescritization::getDiffusionSpComponents() {
+    return diffusionSpComponents;
 }
 
-void CellDescritization::addSuComponent(Face* face, double value) {
-    suComponents->insert(std::make_pair(face, value));
+void CellDescritization::addDiffusionSuComponent(Face* face, double value) {
+    diffusionSuComponents->insert(std::make_pair(face, value));
 }
 
-std::map<Face*, double>* CellDescritization::getSuComponents() {
-    return suComponents;
+std::map<Face*, double>* CellDescritization::getDiffusionSuComponents() {
+    return diffusionSuComponents;
 }
+
+void CellDescritization::addConvectionCoefficient(const FvCell* cell, double coefficient) {
+    convectionCoefficients->insert(std::make_pair(cell, coefficient));
+}
+
+void CellDescritization::addConvectionMassBalanceComponent(const FvCell* cell, double component) {
+    massBalanceCoefficients->insert(std::make_pair(cell, component));
+}
+
+void CellDescritization::addConvectionSpComponent(Face* face, double value) {
+    convectionSpComponents->insert(std::make_pair(face, value));
+}
+
+void CellDescritization::addConvectionSuComponent(Face* face, double value) {
+    convectionSuComponents->insert(std::make_pair(face, value));
+}
+
 
 std::string CellDescritization::toString() {
     std::ostringstream output;
     output<<"coefficients: ";
-    std::map<const FvCell*, double>::iterator it = coefficients->begin();
-    while(it!=coefficients->end()){
+    std::map<const FvCell*, double>::iterator it = diffusionCoefficients->begin();
+    while(it!=diffusionCoefficients->end()){
         output<<","<<it->second;
         it++;
     }
     output<<std::endl;
     output<<"su components: ";
-    std::map<Face*, double>::iterator it1 = suComponents->begin();
-    while(it1!=suComponents->end()){
+    std::map<Face*, double>::iterator it1 = diffusionSuComponents->begin();
+    while(it1!=diffusionSuComponents->end()){
         output<<","<<it1->second;
         it1++;
     }
     output<<std::endl;
     output<<"sp components: ";
-    std::map<Face*, double>::iterator it2 = spComponents->begin();
-    while(it2!=spComponents->end()){
+    std::map<Face*, double>::iterator it2 = diffusionSpComponents->begin();
+    while(it2!=diffusionSpComponents->end()){
         output<<","<<it2->second;
         it2++;
     }
@@ -80,34 +107,34 @@ std::string CellDescritization::toString() {
     return output.str();
 }
 
-void CellDescritization::scaleSuComponent(Face* face, double scaleFactor) {
-    std::map<Face*, double>::iterator it = suComponents->find(face);
-    if (it != suComponents->end()) {
+void CellDescritization::scaleDiffusionSuComponent(Face* face, double scaleFactor) {
+    std::map<Face*, double>::iterator it = diffusionSuComponents->find(face);
+    if (it != diffusionSuComponents->end()) {
         double d = it->second;
         double adjustedValue = d * scaleFactor;
         it->second = adjustedValue;
     }
 }
 
-void CellDescritization::scaleSpComponent(Face* face, double scaleFactor) {
-    std::map<Face*, double>::iterator it = spComponents->find(face);
-    if (it != spComponents->end()) {
+void CellDescritization::scaleDiffusionSpComponent(Face* face, double scaleFactor) {
+    std::map<Face*, double>::iterator it = diffusionSpComponents->find(face);
+    if (it != diffusionSpComponents->end()) {
         double d = it->second;
         double adjustedValue = d * scaleFactor;
         it->second = adjustedValue;
     }
 }
 
-void CellDescritization::scaleAllComponentsAndCoefficients(double scaleFactor) {
+void CellDescritization::scaleAllDiffusionComponentsAndCoefficients(double scaleFactor) {
     
     std::map<Face*, double>::iterator it;
-    for(it=suComponents->begin(); it!=suComponents->end(); it++) {
+    for(it=diffusionSuComponents->begin(); it!=diffusionSuComponents->end(); it++) {
         double d = it->second;
         double adjustedValue = d * scaleFactor;
         it->second = adjustedValue;
     }
     
-    for(it= spComponents->begin(); it!= spComponents->end(); it++){
+    for(it= diffusionSpComponents->begin(); it!= diffusionSpComponents->end(); it++){
         double d = it->second;
         double adjustedValue = d * scaleFactor;
         it->second = adjustedValue;
@@ -115,7 +142,7 @@ void CellDescritization::scaleAllComponentsAndCoefficients(double scaleFactor) {
     
     std::map<const FvCell*, double>::iterator it2;
     
-    for(it2=coefficients->begin(); it2!=coefficients->end(); it2++){
+    for(it2=diffusionCoefficients->begin(); it2!=diffusionCoefficients->end(); it2++){
         double d = it2->second;
         double adjustedValue = d * scaleFactor;
         it2->second = adjustedValue;
@@ -126,9 +153,9 @@ FvCell* CellDescritization::getCell() {
     return cell;
 }
 
-void CellDescritization::appendSuComponent(Face* face, double appendValue) {
-    std::map<Face*, double>::iterator it = suComponents->find(face);
-    if (it != suComponents->end()) {
+void CellDescritization::appendDiffusionSuComponent(Face* face, double appendValue) {
+    std::map<Face*, double>::iterator it = diffusionSuComponents->find(face);
+    if (it != diffusionSuComponents->end()) {
         double d = it->second;
         double adjustedValue = d + appendValue;
         it->second = adjustedValue;
@@ -136,5 +163,13 @@ void CellDescritization::appendSuComponent(Face* face, double appendValue) {
     }
 }
 
+void CellDescritization::scaleConvectionSuComponent(Face* face, double scaleFactor) {
+    std::map<Face*, double>::iterator it = convectionSuComponents->find(face);
+    if (it != convectionSuComponents->end()) {
+        double d = it->second;
+        double adjustedValue = d * scaleFactor;
+        it->second = adjustedValue;
+    }
+}
 
 

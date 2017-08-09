@@ -16,12 +16,13 @@
 
 #include <memory>
 #include <iostream>
+#include <vector>
 
 class MatrixSolver {
     
 public:
     
-    MatrixSolver(long numberOfVariables, double** coefficientMatrix, double* rhsVector, double* solutionVector);
+    MatrixSolver(long numberOfVariables, double** coefficientMatrix, double* rhsVector, std::vector<double> *solutionVector);
     MatrixSolver(const MatrixSolver& orig);
     virtual ~MatrixSolver();
     
@@ -32,8 +33,11 @@ private:
     long numberOfVariables;
     double** coefficientMatrix;
     double* rhsVector;
-    double* solutionVector;
+    std::vector<double> *solutionVector;
     double residualTolerance = 1.0e-4;;
+    
+    std::unique_ptr<double[]> tmpSolution;
+    std::unique_ptr<double[]> errorVector;
     
     double calculateResidual();
     double calculateVectorNorm(double* vector, long numberOfVariables);

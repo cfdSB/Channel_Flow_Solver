@@ -14,8 +14,8 @@
 #include "BoundaryCondition.h"
 #include <sstream>
 
-BoundaryCondition::BoundaryCondition(BcType type, std::vector<Face*> faces, double value)
-:type(type), faces(faces), value(value){
+BoundaryCondition::BoundaryCondition(SolutionVariable *variable, BcType type, double value)
+:variable(variable), type(type), value(value){
 }
 
 BoundaryCondition::BoundaryCondition(const BoundaryCondition& orig) {
@@ -24,15 +24,13 @@ BoundaryCondition::BoundaryCondition(const BoundaryCondition& orig) {
 BoundaryCondition::~BoundaryCondition() {
 }
 
-BoundaryCondition::BcType BoundaryCondition::getType() {
+BoundaryCondition::BcType BoundaryCondition::getType() const{
     return type;
 }
 
-std::vector<Face*>* BoundaryCondition::getFaces() {
-    return &faces;
-}
 
-double BoundaryCondition::getValue() {
+
+double BoundaryCondition::getValue() const{
     return value;
 }
 
@@ -43,10 +41,14 @@ std::string BoundaryCondition::toString() {
     }else if(type == BcType::ADIABATIC){
         str << "BcType : Adiabatic"<<std::endl;
     }
-    str << "Number of faces: " << faces.size() << std::endl;
+    
     str << "Bc Value: " << value << std::endl;
     
     return str.str();
+}
+
+SolutionVariable* BoundaryCondition::getSolutionVariable() const {
+    return variable;
 }
 
 

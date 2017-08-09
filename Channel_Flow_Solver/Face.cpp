@@ -7,7 +7,7 @@
 #include "Face.h"
 
 Face::Face(Point* centroid, double length, double width):
-centroid(centroid), length(length), width(width), cell1(NULL), cell2(NULL){
+centroid(centroid), length(length), width(width), cell1(NULL), cell2(NULL), boundary(NULL){
     
 }
 
@@ -65,6 +65,12 @@ double Face::getArea() const {
     return length*width;
 }
 
+Boundary* Face::getBoundary() const {
+    return boundary;
+}
 
+void Face::setBoundary(Boundary* boundary) {
+    this->boundary = boundary;
+}
 
 

@@ -19,6 +19,7 @@
 #include "Face.h"
 #include <vector>
 #include <sstream>
+#include <map>
 
 class Face;
 class FvCell: public Object{
@@ -28,6 +29,7 @@ private:
     double dx, dy, dz;  //cell dimensions
     Face* faces[6] ;  //to hold pointers to all 6 faces of a cell in order: x-, x+, y-, y+ z-, z+;
     static long idCounter;  //holds latest id number
+    std::map<std::string, double*>* solutionFields;
     
 public:
     FvCell(Point* centroid, double dx, double dy, double dz);
@@ -40,6 +42,9 @@ public:
     void setFaces(std::vector<Face*>& faces);
     Face** getFaces();
     std::string toString() override;
+    void addSolutionField(std::string fieldName, double* val);
+    void removeSolutionField(std::string fieldName);
+    double* getSolutionField(std::string fieldName) const;
 
 };
 

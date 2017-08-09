@@ -22,8 +22,8 @@ BoundaryConditionsManager::BoundaryConditionsManager(const BoundaryConditionsMan
 }
 
 BoundaryConditionsManager::~BoundaryConditionsManager() {
-    for(int i=0; i< allBoundaryConditions->size(); i++){
-        BoundaryCondition* bc = (*allBoundaryConditions)[i];
+    for(size_t i=0; i< allBoundaryConditions->size(); i++){
+        BoundaryCondition* bc = allBoundaryConditions->at(i);
         delete bc;
     }
     delete allBoundaryConditions;
@@ -33,15 +33,16 @@ std::vector<BoundaryCondition*>* BoundaryConditionsManager::getBoundaryCondition
     return allBoundaryConditions;
 }
 
-void BoundaryConditionsManager::createBoundaryCondition(BoundaryCondition::BcType type, std::vector<Face*> faces, double value) {
-    BoundaryCondition* bc = new BoundaryCondition(type, faces, value);
+BoundaryCondition* BoundaryConditionsManager::createBoundaryCondition(SolutionVariable* variable, BoundaryCondition::BcType type, double value) {
+    BoundaryCondition* bc = new BoundaryCondition(variable, type, value);
     allBoundaryConditions->push_back(bc);
+    return bc;
 }
 
-void BoundaryConditionsManager::createBoundaryCondition(std::string plane, double faceCoordinate, double faceTolerance, BoundaryCondition::BcType type, double bcValue) {
-    std::vector<Face*> matchingFaces = mesh->findFaces(plane,faceCoordinate,faceTolerance);
-    createBoundaryCondition(type, matchingFaces, bcValue);
-}
+//void BoundaryConditionsManager::createBoundaryCondition(std::string plane, double faceCoordinate, double faceTolerance, BoundaryCondition::BcType type, double bcValue) {
+//    
+//    createBoundaryCondition(type, bcValue);
+//}
 
 void BoundaryConditionsManager::printBoundaryConditionsReport() {
     std::vector<BoundaryCondition*>::iterator it = allBoundaryConditions->begin();
