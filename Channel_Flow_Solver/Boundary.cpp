@@ -33,6 +33,7 @@ void Boundary::addBoundaryCondition(std::string variableName, BoundaryCondition*
 void Boundary::connectBoundaryToFaces() {
     for(size_t i=0; i<faces->size(); i++){
         faces->at(i)->setBoundary(this);
+        faces->at(i)->setType(Face::FaceType::BOUNDARY_FACE);
     }
 }
 

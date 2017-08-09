@@ -30,8 +30,11 @@ private:
     double length, width;   //face dimensions
     FvCell *cell1, *cell2;  //cells connected to faces
     Boundary *boundary;     //boundary connected to face
+    std::map<std::string, double*>* solutionFields;
+    FaceType fType;
     
 public:
+    enum FaceType {INTERNAL_FACE, BOUNDARY_FACE};
     Face(Point* centroid, double length, double width);
     ~Face();
     const Point* getCentroid() const;
@@ -46,6 +49,13 @@ public:
     double getArea() const;
     Boundary* getBoundary() const;
     void setBoundary(Boundary* boundary);
+    
+    void addSolutionField(std::string fieldName, double* val);
+    void removeSolutionField(std::string fieldName);
+    double* getSolutionField(std::string fieldName) const;
+    
+    FaceType getType() const;
+    void setType(FaceType type) const;
 
     
 };

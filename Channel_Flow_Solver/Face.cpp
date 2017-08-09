@@ -8,7 +8,8 @@
 
 Face::Face(Point* centroid, double length, double width):
 centroid(centroid), length(length), width(width), cell1(NULL), cell2(NULL), boundary(NULL){
-    
+    fType = FaceType::INTERNAL_FACE;
+    solutionFields = new std::map<std::string, double*>();
 }
 
 Face::~Face(){
@@ -71,6 +72,37 @@ Boundary* Face::getBoundary() const {
 
 void Face::setBoundary(Boundary* boundary) {
     this->boundary = boundary;
+    if(Boundary!=NULL){
+        fType = FaceType::BOUNDARY_FACE;
+    }
+}
+
+void Face::addSolutionField(std::string fieldName, double* value) {
+    if(fType == FaceType::BOUNDARY_FACE){
+        solutionFields->insert(std::make_pair(fieldName, value));    
+    }
+}
+
+void Face::removeSolutionField(std::string fieldName) {
+    if(fType == FaceType::BOUNDARY_FACE){
+        solutionFields->erase(fieldName);
+    }
+}
+
+double* Face::getSolutionField(std::string fieldName) const{
+    if(fType == FaceType::BOUNDARY_FACE){
+        return solutionFields->at(fieldName);
+    }
+    
+    return NULL;
+}
+
+Face::FaceType Face::getType() const {
+    return fType;
+}
+
+void Face::setType(FaceType type) const {
+    fType = type;
 }
 
 
