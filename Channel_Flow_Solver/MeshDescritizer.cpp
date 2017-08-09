@@ -55,7 +55,7 @@ void MeshDescritizer::generateDescritizationCoefficients(FvCell* cell) {
     allDescritizations->insert(std::make_pair(cell, cd));
 
     populateDiffusionCoefficients(cell);
-    //populateConvectionCoefficients(cell);
+    populateConvectionCoefficients(cell);
 }
 
 void MeshDescritizer::populateConvectionCoefficients(FvCell* cell) {
@@ -240,7 +240,7 @@ void MeshDescritizer::updateCoefficientsWithBCs(std::vector<Boundary*> *boundari
         std::vector<Face*> *faces = bnd->getFaces();
         for(size_t j=0; j<faces->size(); j++){
             Face* face = faces->at(j);
-            //updateConvectionCoefficientsWithBCs(face);
+            updateConvectionCoefficientsWithBCs(face);
             updateDiffusionCoefficientsWithBCs(face);
         }
     }
@@ -284,6 +284,10 @@ void MeshDescritizer::updateConvectionCoefficientsWithBCs(Face* face) {
     CellDescritization* des = allDescritizations->find(cell)->second;
     if (bc->getType() == BoundaryCondition::FIXED_VALUE) {
         des->scaleConvectionSuComponent(face, bc->getValue());
+    }else if(bc->getType() == BoundaryCondition::ADIABATIC){
+        double variableValue = *(cell->getSolutionField("Temperature"));
+        des->scaleConvectionSuComponent(face, variableValue);
+    
     }
 }
 
