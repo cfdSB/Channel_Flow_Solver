@@ -84,6 +84,11 @@ int main(int argc, char** argv) {
 //        std::cout << val1 << ", " << val2 << std::endl;
 //    }
     
+//    for(size_t i=0; i< bnd_xm->getFaces()->size(); i++){
+//        double val = *(bnd_xm->getFaces()->at(i)->getSolutionField("i_velocity"));
+//       std::cout << "Bnd val: " << ", " << val << std::endl; 
+//    }
+    
     std::unique_ptr<BoundaryConditionsManager> bcManager (new BoundaryConditionsManager(mesh));
     BoundaryCondition* bc_xm = bcManager->createBoundaryCondition(temperature, BoundaryCondition::BcType::FIXED_FLUX, 500.00);
     BoundaryCondition* bc_zm = bcManager->createBoundaryCondition(temperature, BoundaryCondition::BcType::ADIABATIC, 0.0);
@@ -110,13 +115,28 @@ int main(int argc, char** argv) {
     std::unique_ptr<MeshDescritizer> discretizer(new MeshDescritizer(mesh, &pc));
     discretizer->computeDiscretizationCoefficients();
     discretizer->printCoefficients();
-   
-//    discretizer->updateCoefficients(bcManager->getBoundaryConditions());
+    
+    discretizer->updateBoundaryFaceSolutionValues(mesh->getBoundaries());
+    
+    for (size_t i = 0; i < bnd_xm->getFaces()->size(); i++) {
+        double val = *(bnd_xm->getFaces()->at(i)->getSolutionField("Temperature"));
+        std::cout << "Bnd xm val: " << ", " << val << std::endl;
+    }
+    for (size_t i = 0; i < bnd_xp->getFaces()->size(); i++) {
+        double val = *(bnd_xp->getFaces()->at(i)->getSolutionField("Temperature"));
+        std::cout << "Bnd xp val: " << ", " << val << std::endl;
+    }
+    for (size_t i = 0; i < bnd_zm->getFaces()->size(); i++) {
+        double val = *(bnd_zm->getFaces()->at(i)->getSolutionField("Temperature"));
+        std::cout << "Bnd zm val: " << ", " << val << std::endl;
+    }
+//   
+////    discretizer->updateCoefficients(bcManager->getBoundaryConditions());
+////    discretizer->printCoefficients();
+//    
+//    discretizer->updateCoefficientsWithBCs(mesh->getBoundaries());
 //    discretizer->printCoefficients();
-    
-    discretizer->updateCoefficientsWithBCs(mesh->getBoundaries());
-    discretizer->printCoefficients();
-    
+//    
     Matrix* coefficientMatrix = discretizer->buildMatrix();
     std::string output = coefficientMatrix->toString();
     std::cout<<output;
