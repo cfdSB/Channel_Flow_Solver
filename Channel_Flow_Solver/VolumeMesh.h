@@ -28,6 +28,7 @@ public:
     long getCellCount();
     long getFaceCount();
     long getPointCount();
+    long getBoundaryFaceCount();
     std::vector<FvCell*>* getCells();
     std::vector<Face*>* getFaces();
     Face* findFace(Face* faceToCompare, double tolerance);

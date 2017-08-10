@@ -88,6 +88,16 @@ std::vector<Face*>* VolumeMesh::getFaces() {
     return allFaces;
 }
 
+long VolumeMesh::getBoundaryFaceCount() {
+    long boundaryFaceCount = 0;
+    for(size_t i=0; i<allBoundaries->size(); i++){
+        boundaryFaceCount = boundaryFaceCount + allBoundaries->at(i)->getFaces()->size();
+    }
+    
+    return boundaryFaceCount;
+}
+
+
 Face* VolumeMesh::findFace(Face* faceToCompare, double tolerance){
     Face* faceFound = NULL;
     
@@ -142,16 +152,36 @@ std::vector<Face*> VolumeMesh::findFaces(std::string plane, double value, double
 }
 
 void VolumeMesh::addSolutionFieldToMesh(std::string fieldName, std::vector<double>* values) {
-  for(long i=0; i<allCells->size(); i++){
-      FvCell* cell = allCells->at(i);
-      cell->addSolutionField(fieldName, &values->at(i));
-  }  
+    long currentLocation = 0;
+    for (long i = 0; i < allCells->size(); i++) {
+        FvCell* cell = allCells->at(i);
+        cell->addSolutionField(fieldName, &values->at(currentLocation));
+        currentLocation++;
+    }
+    for(long j=0; j<allBoundaries->size(); j++){
+        Boundary *bnd = allBoundaries->at(j);
+        for(long k=0; k< bnd->getFaces()->size(); k++){
+            Face *f = bnd->getFaces()->at(k);
+            f->addSolutionField(fieldName, &values->at(currentLocation));
+            currentLocation++;
+        }
+    }
 }
 
 void VolumeMesh::removeSolutionFieldFromMesh(std::string fieldName) {
+    long currentLocation = 0;
     for(int i=0; i<allCells->size(); i++){
         FvCell* cell = allCells->at(i);
         cell->removeSolutionField(fieldName);
+        currentLocation++;
+    }
+    for (long j = 0; j < allBoundaries->size(); j++) {
+        Boundary *bnd = allBoundaries->at(j);
+        for (long k = 0; k < bnd->getFaces()->size(); k++) {
+            Face *f = bnd->getFaces()->at(k);
+            f->removeSolutionField(fieldName);
+            currentLocation++;
+        }
     }
 }
 
