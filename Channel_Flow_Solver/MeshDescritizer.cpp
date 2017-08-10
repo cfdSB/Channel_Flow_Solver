@@ -361,6 +361,10 @@ Matrix* MeshDescritizer::buildMatrix() {
         double suCoefficient = 0; //the coefficient of the cell itself
         for (faceP_double_map it = suComps->begin(); it != suComps->end(); it++) {
             double value = it->second;
+            //multiply with the fixed value BC at that face
+            Face* face = it->first;
+            value = value*(*(face->getSolutionField("Temperature")));
+            
             suCoefficient = suCoefficient + value;
         }
         matrix->setRhs(i, suCoefficient);
@@ -392,6 +396,47 @@ double MeshDescritizer::computeCellCoefficientFromNeighborCellsCoefficients(cons
     cellCoefficient = -1.0 * cellCoefficient - spCoefficient; //sum of all neighbor cell coeffs - sp coefficients        
 
     return cellCoefficient;
+}
+
+void MeshDescritizer::updateBoundaryFaceSolutionValues(std::vector<Boundary*>* boundaries) {
+    for(size_t i=0; i<boundaries->size(); i++){
+        Boundary* bnd = boundaries->at(i);
+
+        BoundaryCondition *bc = bnd->getBoundaryCondition("Temperature");
+        
+        if (bc->getType() == BoundaryCondition::FIXED_VALUE) {
+            std::vector<Face*> *faces = bnd->getFaces();
+            for (size_t j = 0; j < faces->size(); j++) {
+                Face* face = faces->at(j);
+                *(face->getSolutionField("Temperature")) = bc->getValue();
+            }
+        } else if (bc->getType() == BoundaryCondition::ADIABATIC) {
+            std::vector<Face*> *faces = bnd->getFaces();
+            for (size_t j = 0; j < faces->size(); j++) {
+                Face* face = faces->at(j);
+                const FvCell* cell = NULL;
+                cell = face->getCell1();
+                if(cell == NULL){
+                    cell = face->getCell2();
+                }
+                *(face->getSolutionField("Temperature")) = *(cell->getSolutionField("Temperature"));
+            }          
+        } else if (bc->getType() == BoundaryCondition::FIXED_FLUX) {
+            std::vector<Face*> *faces = bnd->getFaces();
+            for (size_t j = 0; j < faces->size(); j++) {
+                Face* face = faces->at(j);
+                const FvCell* cell = NULL;
+                cell = face->getCell1();
+                if(cell == NULL){
+                    cell = face->getCell2();
+                }
+                CellDescritization *cd = allDescritizations->at(cell);
+                double faceCoeff = cd->getDiffusionSuComponents()->at(face);
+                *(face->getSolutionField("Temperature")) = *(cell->getSolutionField("Temperature")) + bc->getValue()*face->getArea()/faceCoeff;
+            }                      
+        }
+        
+    }
 }
 
 

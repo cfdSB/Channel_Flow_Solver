@@ -40,6 +40,7 @@ public:
     //void updateCoefficients(std::vector<BoundaryCondition*> *conditions);
     //void updateCoefficients(PhysicsContinuum* pc);
     void updateCoefficientsWithBCs(std::vector<Boundary*> *boundaries);
+    void updateBoundaryFaceSolutionValues(std::vector<Boundary*> *boundaries);
     Matrix* buildMatrix();
 
     
