@@ -35,7 +35,9 @@ SolutionManager::~SolutionManager() {
 
 SolutionVariable* SolutionManager::createSolutionVariable(std::string variableName, SolutionVariable::variableType varType) {
     long cellCount = volumeMesh->getCellCount();
-    SolutionVariable *solVar = new SolutionVariable(variableName, cellCount, varType);
+    long boundaryFaceCount = volumeMesh->getBoundaryFaceCount();
+    long totalCellsAndFaces = cellCount + boundaryFaceCount;
+    SolutionVariable *solVar = new SolutionVariable(variableName, totalCellsAndFaces, varType);
     solutionVariables->push_back(solVar);
     volumeMesh->addSolutionFieldToMesh(variableName, solVar->GetVariableValues());
     return solVar;
