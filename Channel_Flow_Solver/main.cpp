@@ -48,6 +48,7 @@ int main(int argc, char** argv) {
     //define material
     Material air;
     air.setDiffusionCoefficient(10.0);
+    air.setDensity(100.0);
     PhysicsContinuum pc;
     pc.setMaterial(&air);
     
