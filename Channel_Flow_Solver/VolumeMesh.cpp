@@ -147,6 +147,21 @@ void VolumeMesh::removeSolutionFieldFromMesh(std::string fieldName) {
     }
 }
 
+std::vector<const FvCell*> VolumeMesh::findNeighboringCells(FvCell* cell) {
+    std::vector<const FvCell*> neighborCells;
+    
+    Face** faces = cell->getFaces();
+    for(int i=0; i<6; i++){
+        Face* face = faces[i];
+        const FvCell *neighborCell = face->getConnectingCell(cell);
+        if(neighborCell != NULL){
+            neighborCells.push_back(neighborCell);
+        }
+    }
+    return neighborCells;
+}
+
+
 
 
 

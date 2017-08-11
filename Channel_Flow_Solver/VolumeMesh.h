@@ -34,6 +34,7 @@ public:
     void printCells();
     void addSolutionFieldToMesh(std::string fieldName, std::vector<double>* values);
     void removeSolutionFieldFromMesh(std::string fieldName);
+    std::vector<const FvCell*> findNeighboringCells(FvCell *cell);
     friend class MeshBuilder;
     
 private:
