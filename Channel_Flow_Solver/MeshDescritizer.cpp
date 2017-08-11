@@ -329,70 +329,102 @@ Matrix* MeshDescritizer::buildMatrix() {
     std::vector<FvCell*> *allCells = mesh->getCells();
     long i = 0;
     for (i=0; i<allCells->size(); i++) {
-        const FvCell *cell = allCells->at(i);
+        
+        FvCell *cell = allCells->at(i);
         CellDescritization* cd = allDescritizations->at(cell);
         
-        std::map<const FvCell*, double>* coeffs = cd->getDiffusionCoefficients();
-        //loop through each neighbor cell and update matrix
-        typedef std::map<const FvCell*, double>::iterator cellP_double_map;
-        for (cellP_double_map it = coeffs->begin(); it != coeffs->end(); it++) {
-            const FvCell* neighborCell = it->first;
-            double value = it->second;
-            
-            long rowNumber = i;
-            long columnNumber = matrix->getVariableIndex(neighborCell);
-            matrix->setCoefficient(rowNumber, columnNumber, value);
+        long rowNumber = i;
+        long columnNumber = 0;
+        
+        std::vector<const FvCell*> neighborCells = mesh->findNeighboringCells(cell);
+        for(int j=0; j< neighborCells.size(); j++){
+            const FvCell *neighborCell = neighborCells.at(j);
+            rowNumber = i;
+            columnNumber = matrix->getVariableIndex(neighborCell);
+            double value = computeCoefficientForNeighborCell(cd, neighborCell);
+             matrix->setCoefficient(rowNumber, columnNumber, value);
         }
         
         //compute the coefficient of the cell itself
-        double cellCoefficient = computeCellCoefficientFromNeighborCellsCoefficients(cell);
-        long rowNumber = i;
-        long columnNumber = i;
+        double cellCoefficient = computeCellCoefficientFromNeighborCellsCoefficients(neighborCells, cd);
+        rowNumber = i;
+        columnNumber = i;
         matrix->setCoefficient(rowNumber, columnNumber, cellCoefficient);
         
         //compute RHS coefficients
-        std::map<Face*, double>* suComps = cd->getDiffusionSuComponents();
-        typedef std::map<Face*, double>::iterator faceP_double_map;
-        double suCoefficient = 0; //the coefficient of the cell itself
-        for (faceP_double_map it = suComps->begin(); it != suComps->end(); it++) {
-            Face *face = it->first;
-            BoundaryCondition *bc = face->getBoundary()->getBoundaryCondition("Temperature");
-            double value = it->second;
-            double adjustedValue = adjustSuCoefficientWithBC(value, bc, face->getArea());
-            suCoefficient = suCoefficient + adjustedValue;
-        }
+        double suCoefficient = computeCellSuCoefficient(cd);
+        rowNumber = i;
         matrix->setRhs(i, suCoefficient);
     }
       
     return matrix;
 }
 
-double MeshDescritizer::computeCellCoefficientFromNeighborCellsCoefficients(const FvCell* cell) {
+double MeshDescritizer::computeCoefficientForNeighborCell(CellDescritization *cd, const FvCell* neighborCell){
+    double value = 0.0;
+    value = value + cd->getDiffusionCoefficients()->at(neighborCell);
+    //value = value + cd->getConvectionCoefficients()->at(neighborCell);
+    return value;
+}
+
+double MeshDescritizer::computeCellCoefficientFromNeighborCellsCoefficients(std::vector<const FvCell*> neighborCells, CellDescritization *cd) {
     double cellCoefficient = 0; //the coefficient of the cell itself
-
-    CellDescritization *cd = allDescritizations->at(cell);
-    std::map<const FvCell*, double>* coeffs = cd->getDiffusionCoefficients();
-
-    typedef std::map<const FvCell*, double>::iterator cellP_double_map;
-    for (cellP_double_map it = coeffs->begin(); it != coeffs->end(); it++) {
-        double value = it->second;
-        cellCoefficient = cellCoefficient + value; //calcuation of ap
+    for(int i =0; i< neighborCells.size(); i++){
+        const FvCell *neighborCell = neighborCells.at(i);
+        cellCoefficient = cellCoefficient + computeCoefficientForNeighborCell(cd, neighborCell);
     }
+   
+    double spCoefficient = computeCellSpCoefficient(cd);
+    double massBalanceCoefficient = 0; /*computeMassBalanceCoefficient(cd);*/
+    //Ap definition Ap = -(Ae + Aw) - Sp + (rho_e -rho_w)
+    cellCoefficient = -1.0 * cellCoefficient - spCoefficient + massBalanceCoefficient;     
 
+    return cellCoefficient;
+}
+
+double MeshDescritizer::computeCellSpCoefficient(CellDescritization *cd) {
+    double spCoefficient = 0; 
+    //currently no Sp coefficient from convection side
     std::map<Face*, double>* spComps = cd->getDiffusionSpComponents();
     typedef std::map<Face*, double>::iterator faceP_double_map;
-    double spCoefficient = 0; //the coefficient of the cell itself
     for (faceP_double_map it = spComps->begin(); it != spComps->end(); it++) {
-        Face* face = it->first; 
+        Face* face = it->first;
         double value = it->second;
         BoundaryCondition *bc = face->getBoundary()->getBoundaryCondition("Temperature");
         double adjustedValue = adjustSpCoefficientWithBC(value, bc);
         spCoefficient = spCoefficient + adjustedValue;
     }
-    //Ap definition Ap = -(Ae + Aw) - Sp
-    cellCoefficient = -1.0 * cellCoefficient - spCoefficient; //sum of all neighbor cell coeffs - sp coefficients        
+    
+    return spCoefficient;
+}
 
-    return cellCoefficient;
+double MeshDescritizer::computeCellSuCoefficient(CellDescritization *cd) {
+    double suCoefficient = 0; //the coefficient of the cell itself
+    
+    std::map<Face*, double>* suComps = cd->getDiffusionSuComponents();
+    typedef std::map<Face*, double>::iterator faceP_double_map;
+    
+    for (faceP_double_map it = suComps->begin(); it != suComps->end(); it++) {
+        Face *face = it->first;
+        BoundaryCondition *bc = face->getBoundary()->getBoundaryCondition("Temperature");
+        double value = it->second;
+        double adjustedValue = adjustSuCoefficientWithBC(value, bc, face->getArea());
+        suCoefficient = suCoefficient + adjustedValue;
+    }
+    
+    return suCoefficient;
+}
+
+double MeshDescritizer::computeMassBalanceCoefficient(CellDescritization* cd) {
+    double massBalanceCoefficient = 0; //the coefficient of the cell itself
+    
+    std::map<const FvCell*, double>* massBalanceComps = cd->getConvectionMassBalanceComponents();
+    typedef std::map<const FvCell*, double>::iterator cellP_double_map;
+    for (cellP_double_map it = massBalanceComps->begin(); it != massBalanceComps->end(); it++) {
+        massBalanceCoefficient = massBalanceCoefficient + it->second;
+    }
+    
+    return massBalanceCoefficient;    
 }
 
 double MeshDescritizer::adjustSpCoefficientWithBC(double coeff, BoundaryCondition* bc) {

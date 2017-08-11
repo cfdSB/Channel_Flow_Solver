@@ -60,6 +60,11 @@ private:
     double adjustSpCoefficientWithBC(double coeff, BoundaryCondition *bc);
     double adjustSuCoefficientWithBC(double coeff, BoundaryCondition *bc, double faceArea);
     
+    double computeCoefficientForNeighborCell(CellDescritization *cd, const FvCell* neighborCell);
+    double computeCellSpCoefficient(CellDescritization *cd);
+    double computeCellSuCoefficient(CellDescritization *cd);
+    double computeMassBalanceCoefficient(CellDescritization *cd);
+    double computeCellCoefficientFromNeighborCellsCoefficients(std::vector<const FvCell*> neighborCells, CellDescritization *cd);
 };
 
 #endif /* MESHDESCRITIZER_H */
