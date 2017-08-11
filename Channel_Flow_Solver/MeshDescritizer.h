@@ -57,6 +57,8 @@ private:
     void updateDiffusionCoefficientsWithBCs(Face* face);
     
     double computeCellCoefficientFromNeighborCellsCoefficients(const FvCell*);
+    double adjustSpCoefficientWithBC(double coeff, BoundaryCondition *bc);
+    double adjustSuCoefficientWithBC(double coeff, BoundaryCondition *bc, double faceArea);
     
 };
 

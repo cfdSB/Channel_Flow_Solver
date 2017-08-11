@@ -343,29 +343,27 @@ Matrix* MeshDescritizer::buildMatrix() {
             long columnNumber = matrix->getVariableIndex(neighborCell);
             matrix->setCoefficient(rowNumber, columnNumber, value);
         }
+        
         //compute the coefficient of the cell itself
         double cellCoefficient = computeCellCoefficientFromNeighborCellsCoefficients(cell);
         long rowNumber = i;
         long columnNumber = i;
         matrix->setCoefficient(rowNumber, columnNumber, cellCoefficient);
-
-    }
-    
-    //populate RHS coefficients
-    for (i=0; i<allCells->size(); i++) {
-        const FvCell *cell = allCells->at(i);
-        CellDescritization* cd = allDescritizations->at(cell);
         
+        //compute RHS coefficients
         std::map<Face*, double>* suComps = cd->getDiffusionSuComponents();
         typedef std::map<Face*, double>::iterator faceP_double_map;
         double suCoefficient = 0; //the coefficient of the cell itself
         for (faceP_double_map it = suComps->begin(); it != suComps->end(); it++) {
+            Face *face = it->first;
+            BoundaryCondition *bc = face->getBoundary()->getBoundaryCondition("Temperature");
             double value = it->second;
-            suCoefficient = suCoefficient + value;
+            double adjustedValue = adjustSuCoefficientWithBC(value, bc, face->getArea());
+            suCoefficient = suCoefficient + adjustedValue;
         }
         matrix->setRhs(i, suCoefficient);
     }
-    
+      
     return matrix;
 }
 
@@ -385,8 +383,11 @@ double MeshDescritizer::computeCellCoefficientFromNeighborCellsCoefficients(cons
     typedef std::map<Face*, double>::iterator faceP_double_map;
     double spCoefficient = 0; //the coefficient of the cell itself
     for (faceP_double_map it = spComps->begin(); it != spComps->end(); it++) {
+        Face* face = it->first; 
         double value = it->second;
-        spCoefficient = spCoefficient + value;
+        BoundaryCondition *bc = face->getBoundary()->getBoundaryCondition("Temperature");
+        double adjustedValue = adjustSpCoefficientWithBC(value, bc);
+        spCoefficient = spCoefficient + adjustedValue;
     }
     //Ap definition Ap = -(Ae + Aw) - Sp
     cellCoefficient = -1.0 * cellCoefficient - spCoefficient; //sum of all neighbor cell coeffs - sp coefficients        
@@ -394,5 +395,24 @@ double MeshDescritizer::computeCellCoefficientFromNeighborCellsCoefficients(cons
     return cellCoefficient;
 }
 
+double MeshDescritizer::adjustSpCoefficientWithBC(double coeff, BoundaryCondition* bc) {
+    if (bc->getType() == BoundaryCondition::FIXED_VALUE) {
+        return coeff; //no change
+    } else if (bc->getType() == BoundaryCondition::ADIABATIC) {
+        return coeff*0.0;
+    } else if (bc->getType() == BoundaryCondition::FIXED_FLUX) {
+        return coeff*0.0;
+    }
+}
+
+double MeshDescritizer::adjustSuCoefficientWithBC(double coeff, BoundaryCondition* bc, double faceArea) {
+    if (bc->getType() == BoundaryCondition::FIXED_VALUE) {
+        return coeff*bc->getValue();
+    } else if (bc->getType() == BoundaryCondition::ADIABATIC) {
+        return coeff*0.0;
+    } else if (bc->getType() == BoundaryCondition::FIXED_FLUX) {
+        return coeff*0.0 + bc->getValue()*faceArea;
+    }
+}
 
 
