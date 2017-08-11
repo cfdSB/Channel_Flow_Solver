@@ -42,6 +42,11 @@ public:
     void addConvectionSpComponent(Face* face, double value);
     void addConvectionMassBalanceComponent(const FvCell* cell, double component);
     void scaleConvectionSuComponent(Face* face, double scaleFactor);
+    std::map<const FvCell*, double>* getConvectionCoefficients();
+    std::map<Face*, double>* getConvectionSuComponents();
+    std::map<Face*, double>* getConvectionSpComponents();
+    std::map<const FvCell*, double>* getConvectionMassBalanceComponents();
+    
     
     FvCell* getCell();
     std::string toString() override;

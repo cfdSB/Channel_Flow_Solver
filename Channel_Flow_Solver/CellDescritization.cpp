@@ -80,6 +80,25 @@ void CellDescritization::addConvectionSuComponent(Face* face, double value) {
     convectionSuComponents->insert(std::make_pair(face, value));
 }
 
+std::map<const FvCell*, double>* CellDescritization::getConvectionCoefficients() {
+    return convectionCoefficients;
+}
+
+std::map<const FvCell*, double>* CellDescritization::getConvectionMassBalanceComponents() {
+    return massBalanceCoefficients;
+}
+
+std::map<Face*, double>* CellDescritization::getConvectionSpComponents() {
+    return convectionSpComponents;
+}
+
+std::map<Face*, double>* CellDescritization::getConvectionSuComponents() {
+    return convectionSuComponents;
+}
+
+
+
+
 
 std::string CellDescritization::toString() {
     std::ostringstream output;
