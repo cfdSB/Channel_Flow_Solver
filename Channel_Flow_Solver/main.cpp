@@ -109,8 +109,8 @@ int main(int argc, char** argv) {
 //    discretizer->updateCoefficients(bcManager->getBoundaryConditions());
 //    discretizer->printCoefficients();
     
-    discretizer->updateCoefficientsWithBCs(bndManager->getBoundaries());
-    discretizer->printCoefficients();
+//    discretizer->updateCoefficientsWithBCs(bndManager->getBoundaries());
+//    discretizer->printCoefficients();
     
     Matrix* coefficientMatrix = discretizer->buildMatrix();
     std::string output = coefficientMatrix->toString();
