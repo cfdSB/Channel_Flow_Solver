@@ -47,8 +47,8 @@ int main(int argc, char** argv) {
     
     //define material
     Material air;
-    air.setDiffusionCoefficient(10.0);
-    air.setDensity(100.0);
+    air.setDiffusionCoefficient(0.1);
+    air.setDensity(1.0);
     PhysicsContinuum pc;
     pc.setMaterial(&air);
     
@@ -64,11 +64,11 @@ int main(int argc, char** argv) {
     
     std::unique_ptr<SolutionManager> solManager (new SolutionManager(mesh));
     SolutionVariable* vel_i = solManager->createSolutionVariable("i_velocity", SolutionVariable::variableType::FIXED_FIELD);
-    vel_i->initializeVariable(30.0);
+    vel_i->initializeVariable(0.01);
     SolutionVariable* vel_j = solManager->createSolutionVariable("j_velocity", SolutionVariable::variableType::FIXED_FIELD);
-    vel_j->initializeVariable(10.0);
+    vel_j->initializeVariable(0.0);
     SolutionVariable* vel_k = solManager->createSolutionVariable("k_velocity", SolutionVariable::variableType::FIXED_FIELD);
-    vel_k->initializeVariable(10.0);
+    vel_k->initializeVariable(0.0);
     SolutionVariable* temperature = solManager->createSolutionVariable("Temperature", SolutionVariable::variableType::SOLUTION_FIELD);
     temperature->initializeVariable(0.0);
 
@@ -81,14 +81,14 @@ int main(int argc, char** argv) {
 //    }
     
     std::unique_ptr<BoundaryConditionsManager> bcManager (new BoundaryConditionsManager(mesh));
-    BoundaryCondition* bc_xm = bcManager->createBoundaryCondition(temperature, BoundaryCondition::BcType::FIXED_FLUX, 500.00);
+    BoundaryCondition* bc_xm = bcManager->createBoundaryCondition(temperature, BoundaryCondition::BcType::FIXED_VALUE, 500.00);
     BoundaryCondition* bc_zm = bcManager->createBoundaryCondition(temperature, BoundaryCondition::BcType::ADIABATIC, 0.0);
     BoundaryCondition* bc_xp = bcManager->createBoundaryCondition(temperature, BoundaryCondition::BcType::FIXED_VALUE,300.00);
     BoundaryCondition* bc_ym = bcManager->createBoundaryCondition(temperature, BoundaryCondition::BcType::ADIABATIC,0.0);
     BoundaryCondition* bc_yp = bcManager->createBoundaryCondition(temperature, BoundaryCondition::BcType::ADIABATIC,0.0);
     BoundaryCondition* bc_zp = bcManager->createBoundaryCondition(temperature, BoundaryCondition::BcType::ADIABATIC,0.0);
-    BoundaryCondition* bc_vel1_xm = bcManager->createBoundaryCondition(vel_i, BoundaryCondition::BcType::FIXED_VALUE, 0.1);
-    BoundaryCondition* bc_vel1_xp = bcManager->createBoundaryCondition(vel_i, BoundaryCondition::BcType::FIXED_VALUE, 0.1);
+    BoundaryCondition* bc_vel1_xm = bcManager->createBoundaryCondition(vel_i, BoundaryCondition::BcType::FIXED_VALUE, 0.01);
+    BoundaryCondition* bc_vel1_xp = bcManager->createBoundaryCondition(vel_i, BoundaryCondition::BcType::FIXED_VALUE, 0.01);
     BoundaryCondition* bc_vel1_rest = bcManager->createBoundaryCondition(vel_i, BoundaryCondition::BcType::FIXED_VALUE, 0.0);
     BoundaryCondition* bc_vel2_rest = bcManager->createBoundaryCondition(vel_j, BoundaryCondition::BcType::FIXED_VALUE, 0.0);
     BoundaryCondition* bc_vel3_rest = bcManager->createBoundaryCondition(vel_k, BoundaryCondition::BcType::FIXED_VALUE, 0.0);
