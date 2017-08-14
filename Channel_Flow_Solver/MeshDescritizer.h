@@ -57,8 +57,11 @@ private:
     void updateDiffusionCoefficientsWithBCs(Face* face);
     
     double computeCellCoefficientFromNeighborCellsCoefficients(const FvCell*);
-    double adjustSpCoefficientWithBC(double coeff, BoundaryCondition *bc);
-    double adjustSuCoefficientWithBC(double coeff, BoundaryCondition *bc, double faceArea);
+    double adjustDiffusionSpCoefficientWithBC(double coeff, BoundaryCondition *bc);
+    double adjustDiffusionSuCoefficientWithBC(double coeff, BoundaryCondition *bc, double faceArea);
+    double adjustConvectionSpCoefficientWithBC(double coeff, BoundaryCondition *bc);
+    double adjustConvectionSuCoefficientWithBC(double coeff, double variableValue);
+    double computeFaceVariableValueFromBC(Face *face, FvCell *cell);
     
     double computeCoefficientForNeighborCell(CellDescritization *cd, const FvCell* neighborCell);
     double computeCellSpCoefficient(CellDescritization *cd);

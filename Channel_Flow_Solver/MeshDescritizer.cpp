@@ -70,7 +70,7 @@ void MeshDescritizer::populateConvectionCoefficients(FvCell* cell) {
     Face* zmFace = faces[4];
     Face* zpFace = faces[5];
     
-    double density = physicsContinuum->getDensity();
+    double density = physicsContinuum->getMaterial()->getDensity();
     
     //x- direction convection flux
     const FvCell* xmCell = xmFace->getConnectingCell(cell);
@@ -363,7 +363,7 @@ Matrix* MeshDescritizer::buildMatrix() {
 double MeshDescritizer::computeCoefficientForNeighborCell(CellDescritization *cd, const FvCell* neighborCell){
     double value = 0.0;
     value = value + cd->getDiffusionCoefficients()->at(neighborCell);
-    //value = value + cd->getConvectionCoefficients()->at(neighborCell);
+    value = value + cd->getConvectionCoefficients()->at(neighborCell);
     return value;
 }
 
@@ -375,8 +375,8 @@ double MeshDescritizer::computeCellCoefficientFromNeighborCellsCoefficients(std:
     }
    
     double spCoefficient = computeCellSpCoefficient(cd);
-    double massBalanceCoefficient = 0; /*computeMassBalanceCoefficient(cd);*/
-    //Ap definition Ap = -(Ae + Aw) - Sp + (rho_e -rho_w)
+    double massBalanceCoefficient = computeMassBalanceCoefficient(cd);
+    //Ap definition Ap = -(Ae + Aw) - Sp + (M_e - M_w)
     cellCoefficient = -1.0 * cellCoefficient - spCoefficient + massBalanceCoefficient;     
 
     return cellCoefficient;
@@ -391,7 +391,7 @@ double MeshDescritizer::computeCellSpCoefficient(CellDescritization *cd) {
         Face* face = it->first;
         double value = it->second;
         BoundaryCondition *bc = face->getBoundary()->getBoundaryCondition("Temperature");
-        double adjustedValue = adjustSpCoefficientWithBC(value, bc);
+        double adjustedValue = adjustDiffusionSpCoefficientWithBC(value, bc);
         spCoefficient = spCoefficient + adjustedValue;
     }
     
@@ -408,11 +408,40 @@ double MeshDescritizer::computeCellSuCoefficient(CellDescritization *cd) {
         Face *face = it->first;
         BoundaryCondition *bc = face->getBoundary()->getBoundaryCondition("Temperature");
         double value = it->second;
-        double adjustedValue = adjustSuCoefficientWithBC(value, bc, face->getArea());
+        double adjustedValue = adjustDiffusionSuCoefficientWithBC(value, bc, face->getArea());
+        suCoefficient = suCoefficient + adjustedValue;
+    }
+    
+    suComps = cd->getConvectionSuComponents();
+    for (faceP_double_map it = suComps->begin(); it != suComps->end(); it++) {
+        Face *face = it->first;
+        double coeff = it->second;
+        double variableValue = computeFaceVariableValueFromBC(face, cd->getCell());
+        double adjustedValue = adjustConvectionSuCoefficientWithBC(coeff, variableValue);
         suCoefficient = suCoefficient + adjustedValue;
     }
     
     return suCoefficient;
+}
+
+double MeshDescritizer::computeFaceVariableValueFromBC(Face *face, FvCell *cell) {
+    BoundaryCondition *bc = face->getBoundary()->getBoundaryCondition("Temperature");
+
+    if (bc->getType() == BoundaryCondition::FIXED_VALUE) {
+        return bc->getValue();
+    } else if (bc->getType() == BoundaryCondition::ADIABATIC) {
+        return *(cell->getSolutionField("Temperature"));
+    } else if (bc->getType() == BoundaryCondition::FIXED_FLUX) {
+        Face **faces = cell->getFaces();
+        if (face == faces[0] || face == faces[2] || face == faces[4]) {
+            //face normal in global coordinate axis direction
+            double suComponent = allDescritizations->at(cell)->getDiffusionSuComponents()->at(face);
+            return bc->getValue()/suComponent + *(cell->getSolutionField("Temperature"));
+        }else{
+            double suComponent = allDescritizations->at(cell)->getDiffusionSuComponents()->at(face);
+            return -1.0*bc->getValue()/suComponent + *(cell->getSolutionField("Temperature"));
+        }
+    }
 }
 
 double MeshDescritizer::computeMassBalanceCoefficient(CellDescritization* cd) {
@@ -427,24 +456,37 @@ double MeshDescritizer::computeMassBalanceCoefficient(CellDescritization* cd) {
     return massBalanceCoefficient;    
 }
 
-double MeshDescritizer::adjustSpCoefficientWithBC(double coeff, BoundaryCondition* bc) {
+double MeshDescritizer::adjustDiffusionSpCoefficientWithBC(double coeff, BoundaryCondition* bc) {
     if (bc->getType() == BoundaryCondition::FIXED_VALUE) {
         return coeff; //no change
     } else if (bc->getType() == BoundaryCondition::ADIABATIC) {
         return coeff*0.0;
     } else if (bc->getType() == BoundaryCondition::FIXED_FLUX) {
         return coeff*0.0;
+    }else{
+        return coeff;
     }
 }
 
-double MeshDescritizer::adjustSuCoefficientWithBC(double coeff, BoundaryCondition* bc, double faceArea) {
+double MeshDescritizer::adjustDiffusionSuCoefficientWithBC(double coeff, BoundaryCondition* bc, double faceArea) {
     if (bc->getType() == BoundaryCondition::FIXED_VALUE) {
         return coeff*bc->getValue();
     } else if (bc->getType() == BoundaryCondition::ADIABATIC) {
         return coeff*0.0;
     } else if (bc->getType() == BoundaryCondition::FIXED_FLUX) {
         return coeff*0.0 + bc->getValue()*faceArea;
+    }else{
+        return coeff;
     }
 }
+
+double MeshDescritizer::adjustConvectionSpCoefficientWithBC(double coeff, BoundaryCondition* bc) {
+    return coeff;
+}
+
+double MeshDescritizer::adjustConvectionSuCoefficientWithBC(double coeff, double variableValue) {
+    return coeff*variableValue;
+}
+
 
 
