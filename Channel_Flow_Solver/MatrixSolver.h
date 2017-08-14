@@ -34,7 +34,7 @@ private:
     double** coefficientMatrix;
     double* rhsVector;
     std::vector<double> *solutionVector;
-    double residualTolerance = 1.0e-4;;
+    double residualTolerance = 1.0e-6;
     
     std::unique_ptr<double[]> tmpSolution;
     std::unique_ptr<double[]> errorVector;
