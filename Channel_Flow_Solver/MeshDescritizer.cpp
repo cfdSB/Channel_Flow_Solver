@@ -55,7 +55,7 @@ void MeshDescritizer::generateDescritizationCoefficients(FvCell* cell) {
     allDescritizations->insert(std::make_pair(cell, cd));
 
     populateDiffusionCoefficients(cell);
-    populateConvectionCoefficients(cell);
+    //populateConvectionCoefficients(cell);
 }
 
 void MeshDescritizer::populateConvectionCoefficients(FvCell* cell) {
@@ -172,7 +172,7 @@ void MeshDescritizer::populateDiffusionCoefficients(FvCell* cell) {
             double diffusionCoefficient = physicsContinuum->getMaterial()->getDiffusionCoefficient();
             double coeff = faceArea / distance*diffusionCoefficient;
             cd->addDiffusionSuComponent(face, coeff);
-            cd->addDiffusionSpComponent(face, -1.0 * coeff);
+            cd->addDiffusionSpComponent(face, coeff);
         } else {
             //regular cell
             const Point* connectingCellCentroid = connectingCell->getCentroid();
@@ -363,7 +363,7 @@ Matrix* MeshDescritizer::buildMatrix() {
 double MeshDescritizer::computeCoefficientForNeighborCell(CellDescritization *cd, const FvCell* neighborCell){
     double value = 0.0;
     value = value + cd->getDiffusionCoefficients()->at(neighborCell);
-    value = value + cd->getConvectionCoefficients()->at(neighborCell);
+    //value = value + cd->getConvectionCoefficients()->at(neighborCell);
     return value;
 }
 
@@ -377,7 +377,7 @@ double MeshDescritizer::computeCellCoefficientFromNeighborCellsCoefficients(std:
     double spCoefficient = computeCellSpCoefficient(cd);
     double massBalanceCoefficient = computeMassBalanceCoefficient(cd);
     //Ap definition Ap = -(Ae + Aw) - Sp + (M_e - M_w)
-    cellCoefficient = -1.0 * cellCoefficient - spCoefficient + massBalanceCoefficient;     
+    cellCoefficient = -1.0 * cellCoefficient + spCoefficient + massBalanceCoefficient;     
 
     return cellCoefficient;
 }
@@ -412,14 +412,14 @@ double MeshDescritizer::computeCellSuCoefficient(CellDescritization *cd) {
         suCoefficient = suCoefficient + adjustedValue;
     }
     
-    suComps = cd->getConvectionSuComponents();
-    for (faceP_double_map it = suComps->begin(); it != suComps->end(); it++) {
-        Face *face = it->first;
-        double coeff = it->second;
-        double variableValue = computeFaceVariableValueFromBC(face, cd->getCell());
-        double adjustedValue = adjustConvectionSuCoefficientWithBC(coeff, variableValue);
-        suCoefficient = suCoefficient + adjustedValue;
-    }
+//    suComps = cd->getConvectionSuComponents();
+//    for (faceP_double_map it = suComps->begin(); it != suComps->end(); it++) {
+//        Face *face = it->first;
+//        double coeff = it->second;
+//        double variableValue = computeFaceVariableValueFromBC(face, cd->getCell());
+//        double adjustedValue = adjustConvectionSuCoefficientWithBC(coeff, variableValue);
+//        suCoefficient = suCoefficient + adjustedValue;
+//    }
     
     return suCoefficient;
 }
@@ -447,11 +447,11 @@ double MeshDescritizer::computeFaceVariableValueFromBC(Face *face, FvCell *cell)
 double MeshDescritizer::computeMassBalanceCoefficient(CellDescritization* cd) {
     double massBalanceCoefficient = 0; //the coefficient of the cell itself
     
-    std::map<const FvCell*, double>* massBalanceComps = cd->getConvectionMassBalanceComponents();
-    typedef std::map<const FvCell*, double>::iterator cellP_double_map;
-    for (cellP_double_map it = massBalanceComps->begin(); it != massBalanceComps->end(); it++) {
-        massBalanceCoefficient = massBalanceCoefficient + it->second;
-    }
+//    std::map<const FvCell*, double>* massBalanceComps = cd->getConvectionMassBalanceComponents();
+//    typedef std::map<const FvCell*, double>::iterator cellP_double_map;
+//    for (cellP_double_map it = massBalanceComps->begin(); it != massBalanceComps->end(); it++) {
+//        massBalanceCoefficient = massBalanceCoefficient + it->second;
+//    }
     
     return massBalanceCoefficient;    
 }

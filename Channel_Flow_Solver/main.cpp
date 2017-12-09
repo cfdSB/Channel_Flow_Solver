@@ -35,11 +35,11 @@ using namespace std;
  */
 int main(int argc, char** argv) {
     //   
-    int xCells = 6;
-    int yCells = 6;
-    int zCells = 6;
+    int xCells = 8;
+    int yCells = 4;
+    int zCells = 2;
     
-    double xMin = 0.0, xMax = 0.3, yMin = 0.0, yMax = 0.3, zMin = 0.0, zMax = 0.3;
+    double xMin = 0.0, xMax = 0.8, yMin = 0.0, yMax = 0.4, zMin = 0.0, zMax = 0.2;
     
     MeshBuilder mesher;
     mesher.buildMesh(xMin, xMax, yMin, yMax, zMin, zMax, xCells, yCells, zCells);
