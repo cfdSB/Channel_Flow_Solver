@@ -55,7 +55,7 @@ void MeshDescritizer::generateDescritizationCoefficients(FvCell* cell) {
     allDescritizations->insert(std::make_pair(cell, cd));
 
     populateDiffusionCoefficients(cell);
-    //populateConvectionCoefficients(cell);
+    populateConvectionCoefficients(cell);
 }
 
 void MeshDescritizer::populateConvectionCoefficients(FvCell* cell) {
@@ -76,11 +76,14 @@ void MeshDescritizer::populateConvectionCoefficients(FvCell* cell) {
     const FvCell* xmCell = xmFace->getConnectingCell(cell);
     if(xmCell==NULL){
         double xmFaceVel = xmFace->getBoundary()->getBoundaryCondition("i_velocity")->getValue();
-        cd->addConvectionSuComponent(xmFace, density*xmFace->getArea()*xmFaceVel);
+        double faceFlux = density*xmFace->getArea()*xmFaceVel;
+        cd->addConvectionSuComponent(xmFace, faceFlux);
     }else{
-        double xmFaceVel = (*(xmCell->getSolutionField("i_velocity")) + *(cell->getSolutionField("i_velocity")))/2.0;
-        double faceFlux = xmFaceVel*density*xmFace->getArea();
-        double xmConvFlux = -1.0*faceFlux/2.0;
+        //interpolate face velocity from surrounding cells
+        double neighborInterpolationCoeff = computeInterpolationCoefficient(xmFace, cell, xmCell);
+        double xmFaceVel = findInterpolatedFaceVariable(neighborInterpolationCoeff, cell, xmCell, "i_velocity");
+        double faceFlux = density*xmFace->getArea()*xmFaceVel;
+        double xmConvFlux = -1.0*faceFlux*(1.0-neighborInterpolationCoeff);
         cd->addConvectionCoefficient(xmCell, xmConvFlux);
         cd->addConvectionMassBalanceComponent(xmCell,-1.0*faceFlux);
     }
@@ -89,13 +92,15 @@ void MeshDescritizer::populateConvectionCoefficients(FvCell* cell) {
     const FvCell* xpCell = xpFace->getConnectingCell(cell);
     if(xpCell == NULL){
         double xpFaceVel = xpFace->getBoundary()->getBoundaryCondition("i_velocity")->getValue();
-        cd->addConvectionSuComponent(xpFace,-1.0*density*xpFace->getArea()*xpFaceVel);
-    }else{
-       double xpFaceVel = (*(xpCell->getSolutionField("i_velocity")) + *(cell->getSolutionField("i_velocity")))/2.0; 
-       double faceFlux = xpFaceVel*density*xpFace->getArea();
-       double xpConvFlux = faceFlux/2.0;
-       cd->addConvectionCoefficient(xpCell, xpConvFlux);
-       cd->addConvectionMassBalanceComponent(xpCell,faceFlux);
+        double faceFlux = -1.0*density*xpFace->getArea()*xpFaceVel;
+        cd->addConvectionSuComponent(xpFace,faceFlux);
+    }else {
+        double neighborInterpolationCoeff = computeInterpolationCoefficient(xpFace, cell, xpCell);
+        double xpFaceVel = findInterpolatedFaceVariable(neighborInterpolationCoeff, cell, xpCell, "i_velocity");
+        double faceFlux = density * xpFace->getArea() * xpFaceVel; 
+        double xpConvFlux = faceFlux*(1 - neighborInterpolationCoeff);;
+        cd->addConvectionCoefficient(xpCell, xpConvFlux);
+        cd->addConvectionMassBalanceComponent(xpCell, faceFlux);
     }
     
     //y- direction convective flux
@@ -103,11 +108,13 @@ void MeshDescritizer::populateConvectionCoefficients(FvCell* cell) {
     
     if(ymCell == NULL){
         double ymFaceVel = ymFace->getBoundary()->getBoundaryCondition("j_velocity")->getValue();
-        cd->addConvectionSuComponent(ymFace, density*ymFace->getArea()*ymFaceVel);
+        double faceFlux = density*ymFace->getArea()*ymFaceVel;
+        cd->addConvectionSuComponent(ymFace, faceFlux);
     }else{
-        double ymFaceVel = (*(ymCell->getSolutionField("j_velocity")) + *(cell->getSolutionField("j_velocity")))/2.0;
-        double faceFlux = ymFaceVel*density*ymFace->getArea();
-        double ymConvFlux = -1.0*faceFlux/2.0;
+        double neighborInterpolationCoeff = computeInterpolationCoefficient(ymFace, cell, ymCell);
+        double ymFaceVel = findInterpolatedFaceVariable(neighborInterpolationCoeff, cell, ymCell, "j_velocity");
+        double faceFlux = density*ymFace->getArea()*ymFaceVel;
+        double ymConvFlux = -1.0*faceFlux*(1-neighborInterpolationCoeff);
         cd->addConvectionCoefficient(ymCell, ymConvFlux);
         cd->addConvectionMassBalanceComponent(ymCell,-1.0*faceFlux);
     }
@@ -116,11 +123,13 @@ void MeshDescritizer::populateConvectionCoefficients(FvCell* cell) {
     const FvCell* ypCell = ypFace->getConnectingCell(cell);
     if(ypCell == NULL){
          double ypFaceVel = ypFace->getBoundary()->getBoundaryCondition("j_velocity")->getValue();
-        cd->addConvectionSuComponent(ypFace,-1.0*density*ypFace->getArea()*ypFaceVel);
+         double faceFlux = -1.0*density*ypFace->getArea()*ypFaceVel;
+         cd->addConvectionSuComponent(ypFace, faceFlux);
     } else {
-        double ypFaceVel = (*(ypCell->getSolutionField("j_velocity")) + *(cell->getSolutionField("j_velocity"))) / 2.0;
-        double faceFlux = ypFaceVel * density * ypFace->getArea();
-        double ypConvFlux = faceFlux / 2.0;
+        double neighborInterpolationCoeff = computeInterpolationCoefficient(ypFace, cell, ypCell);
+        double ypFaceVel = findInterpolatedFaceVariable(neighborInterpolationCoeff, cell, ypCell, "j_velocity");
+        double faceFlux = density * ypFace->getArea()*ypFaceVel;
+        double ypConvFlux = faceFlux*(1-neighborInterpolationCoeff);
         cd->addConvectionCoefficient(ypCell, ypConvFlux);
         cd->addConvectionMassBalanceComponent(ypCell, faceFlux);
     }
@@ -129,11 +138,13 @@ void MeshDescritizer::populateConvectionCoefficients(FvCell* cell) {
     const FvCell* zmCell = zmFace->getConnectingCell(cell);
     if (zmCell == NULL) {
         double zmFaceVel = zmFace->getBoundary()->getBoundaryCondition("k_velocity")->getValue();
-        cd->addConvectionSuComponent(zmFace, density * zmFace->getArea()*zmFaceVel);
+        double faceFlux = density * zmFace->getArea()*zmFaceVel;
+        cd->addConvectionSuComponent(zmFace, faceFlux);
     } else {
-        double zmFaceVel = (*(zmCell->getSolutionField("k_velocity")) + *(cell->getSolutionField("k_velocity")))/2.0;
-        double faceFlux = zmFaceVel*density*zmFace->getArea();
-        double zmConvFlux = -1.0*faceFlux/2.0;
+        double neighborInterpolationCoeff = computeInterpolationCoefficient(zmFace, cell, zmCell);
+        double zmFaceVel = findInterpolatedFaceVariable(neighborInterpolationCoeff, cell, zmCell, "k_velocity");
+        double faceFlux =  density*zmFace->getArea()*zmFaceVel;
+        double zmConvFlux = -1.0*faceFlux*(1-neighborInterpolationCoeff);
         cd->addConvectionCoefficient(zmCell, zmConvFlux);
         cd->addConvectionMassBalanceComponent(zmCell,-1.0*faceFlux);
     }
@@ -142,15 +153,36 @@ void MeshDescritizer::populateConvectionCoefficients(FvCell* cell) {
     const FvCell* zpCell = zpFace->getConnectingCell(cell);
     if(zpCell == NULL){
         double zpFaceVel = zpFace->getBoundary()->getBoundaryCondition("k_velocity")->getValue();
-        cd->addConvectionSuComponent(zpFace,-1.0*density*zpFace->getArea()*zpFaceVel);
+        double faceFlux = -1.0*density*zpFace->getArea()*zpFaceVel;
+        cd->addConvectionSuComponent(zpFace, faceFlux);
     }else{
-        double zpFaceVel = (*(zpCell->getSolutionField("k_velocity")) + *(cell->getSolutionField("k_velocity"))) / 2.0;
+        double neighborInterpolationCoeff = computeInterpolationCoefficient(zpFace, cell, zpCell);
+        double zpFaceVel = findInterpolatedFaceVariable(neighborInterpolationCoeff, cell, zpCell, "k_velocity");
         double faceFlux = zpFaceVel * density * zpFace->getArea();
-        double zpConvFlux = faceFlux / 2.0;
+        double zpConvFlux = faceFlux*(1-neighborInterpolationCoeff);
         cd->addConvectionCoefficient(zpCell, zpConvFlux);
         cd->addConvectionMassBalanceComponent(zpCell, faceFlux);        
     }
         
+}
+
+double MeshDescritizer::computeInterpolationCoefficient(Face *face, FvCell *cell, const FvCell *neighborCell){
+    double dist1 = MeshUtilities::findDistance(*(face->getCentroid()), *(cell->getCentroid()));
+    double dist2 = MeshUtilities::findDistance(*(face->getCentroid()), *(neighborCell->getCentroid()));
+    
+    double interpolationCoeff = dist2/(dist1+dist2);
+    
+    //double interpolationCoeff = 1-coeff;
+    
+    return interpolationCoeff;
+}
+double MeshDescritizer::findInterpolatedFaceVariable(double interpolationCoeff, FvCell* cell, const FvCell* neighborCell, std::string variable) {
+    //interpolate face velocity from surrounding cells
+    double var1 = *(cell->getSolutionField(variable));
+    double var2 = *(neighborCell->getSolutionField(variable));
+    double interpolatedVar = var1* interpolationCoeff + var2*(1-interpolationCoeff);
+    
+    return interpolatedVar;
 }
 
 void MeshDescritizer::populateDiffusionCoefficients(FvCell* cell) {

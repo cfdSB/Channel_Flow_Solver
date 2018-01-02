@@ -68,6 +68,8 @@ private:
     double computeCellSuCoefficient(CellDescritization *cd);
     double computeMassBalanceCoefficient(CellDescritization *cd);
     double computeCellCoefficientFromNeighborCellsCoefficients(std::vector<const FvCell*> neighborCells, CellDescritization *cd);
+    double findInterpolatedFaceVariable(double interpolationCoeff, FvCell *cell, const FvCell *neighborCell, std::string variable);
+    double computeInterpolationCoefficient(Face *face, FvCell *cell, const FvCell *neighborCell);
 };
 
 #endif /* MESHDESCRITIZER_H */
