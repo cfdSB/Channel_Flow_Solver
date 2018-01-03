@@ -48,7 +48,7 @@ private:
     const PhysicsContinuum* physicsContinuum;
     std::map<const FvCell*, CellDescritization*>* allDescritizations;    
     Matrix* matrix;
-    
+    bool diffusionEnabled, convectionEnabled;
 
     void generateDescritizationCoefficients(FvCell* cell);
     void populateDiffusionCoefficients(FvCell* cell);

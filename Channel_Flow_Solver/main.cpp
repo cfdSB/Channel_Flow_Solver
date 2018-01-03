@@ -37,9 +37,9 @@ int main(int argc, char** argv) {
     //   
     int xCells = 8;
     int yCells = 4;
-    int zCells = 2;
+    int zCells = 6;
     
-    double xMin = 0.0, xMax = 0.8, yMin = 0.0, yMax = 0.4, zMin = 0.0, zMax = 0.2;
+    double xMin = 0.0, xMax = 1.0, yMin = 0.0, yMax = 1.0, zMin = 0.0, zMax = 1.0;
     
     MeshBuilder mesher;
     mesher.buildMesh(xMin, xMax, yMin, yMax, zMin, zMax, xCells, yCells, zCells);
